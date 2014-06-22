@@ -87,7 +87,7 @@ class Game(object):
         
         print("Choose a difficulty")
         while type(self.difficulty) == type([]):
-            dif_list = ["1: Easy", "2: Normal", "3: Your Grave"]
+            dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
             dif = input("\n".join([d for d in dif_list]))
             if dif.isdigit() and int(dif) -1 in range(len(dif_list)):
                 self.difficulty = self.difficulty[int(dif)-1]
@@ -170,8 +170,8 @@ class Game(object):
     
     def _killAKitten(self):
         
-        dead_cat = self.player._kennel.pop(
-                random.randint(0, len(self.player._kennel)-1))
+        dead_cat = self.player.kennel.pop(
+                random.randint(0, len(self.player.kennel)-1))
         return dead_cat.name
     
     def gameOver(self):
@@ -220,13 +220,14 @@ class Game(object):
                 cat.displayInfo()
             
             response = input(CAT_HERDING).split()
-            if response:
+            if response and len(response) == 2:
                 for i in response:
                     if not i.isdigit():
                         print("Let's just move on.")
                         return
                 self.assignKittens(list(map(int, response)))
-                
+            else:
+                print INVALID
         else:
             print("You've rescued no kittens...")
             

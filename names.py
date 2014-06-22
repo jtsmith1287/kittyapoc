@@ -444,7 +444,8 @@ Gauthier
 Morin
 Lavoie
 Fortin
-Gagne""".splitlines()
+Gagne
+Smith""".splitlines()
 
 def generateName():
     

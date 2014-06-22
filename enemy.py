@@ -8,7 +8,11 @@ import random
 
 NAMES = ["Nomming", "Gurgling", "Drooling", "Bloody", "Filthy", "Crawling",
          "Aggressive", "Frightening", "Terrifying", "Hungry", "Famished",
-         "Leg-less", "Arm-less", "One-armed", "Moaning",]
+         "Leg-less", "Arm-less", "One-armed", "Moaning", "Grotesque,", "Nasty",
+         "Gross", "One-eyed", "Bad-breath", "Growling", "Rotting", "Skinless",
+         "Putrid", "Obnoxiously Obese", "Faceless", "Decaying", "Stinky", "Smelly",
+         "Fragrant", "Frenzied", "Pocket Protector", "Awkward", "Buff",
+         "Big McLarge-Huge", "Disgusting", "Huge"]
 
 
 class Zombie(object):
