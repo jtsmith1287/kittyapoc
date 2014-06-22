@@ -227,7 +227,7 @@ class Game(object):
                         return
                 self.assignKittens(list(map(int, response)))
             else:
-                print INVALID
+                print(INVALID)
         else:
             print("You've rescued no kittens...")
             
@@ -257,9 +257,9 @@ class Game(object):
             print("Here's what you've got.")
         else:
             print("You haven't collected anything yet.")
-            return
-        for x,k,v in enumerate(items, 1):
-            print(str(x) + ")", k, "x" + str(v))
+            return None, None # Don't even know...
+        for x,k,v in enumerate(items):
+            print(str(int(x)+1) + ")", k, "x" + str(v))
         choice = input(":")
         if choice and choice.isdigit():
             # This just seems bad... this could be better.
