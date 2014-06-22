@@ -1,4 +1,0 @@
-kittyapoc
-=========
-
-Kitten Apolocalypse!
