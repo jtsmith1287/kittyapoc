@@ -184,7 +184,7 @@ class Game(object):
         
         score = level + kats + items + exp
         
-        print("You scored: " + score)
+        print("You scored: " + str(score))
         
         sys.exit()
     

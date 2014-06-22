@@ -47,8 +47,6 @@ class Zombie(object):
         
         if self.health + mod < 0:
             self.health = 0
-        elif self.health - mod > self.m_health:
-            self.health = self.m_health
         else:
             self.health += mod
         

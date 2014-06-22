@@ -8,7 +8,7 @@ import random
 
 WEAPON_LIST = [
                ("Purse", (1, 1), None),
-               ("walking Stick", (1, 2), None),
+               ("Walking Stick", (1, 2), None),
                ("Brick", (2, 3), None),
                ("Shovel", (3, 4), None)
              ]
