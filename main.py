@@ -247,7 +247,7 @@ class Game(object):
     
     def _pokeCats(self):    
         
-        if self.player.kittenCount() or len(self.player.special_kitten):
+        if self.player.kittenCount() or len(self.player.special_kennel):
             for cat in self.player.kennel:
                 cat.displayInfo()
             print("You have %s kittens" % len(self.player))
