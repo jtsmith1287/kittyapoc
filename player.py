@@ -61,7 +61,7 @@ class Player(object):
     
     def updateHealth(self, mod=0):
         
-        if self.health > self._courage * 2:
+        if self.health + mod >= self._courage * 2:
             self.health = self._courage * 2
         else:
             self.health += mod

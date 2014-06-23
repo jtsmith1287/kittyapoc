@@ -251,6 +251,11 @@ class Game(object):
             for cat in self.player.kennel:
                 cat.displayInfo()
             print("You have %s kittens" % len(self.player))
+            if self.player.special_kennel:
+                print("Here's something special for you to look at")
+                print("(Note: special cats can't be herded)")
+                for scat in self.player.special_kennel:
+                    scat.displayInfo()
             response = input(CAT_HERDING).split()
             if response and len(response) == 2:
                 for i in response:
