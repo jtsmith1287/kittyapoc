@@ -74,9 +74,10 @@ class Game(object):
     def __init__(self):
         
         self.running = True
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 79
         self.difficulty = [1, 1.25, 1.5]
-        self.find_kitten_chance = 0.3
-        self.find_item_chance = 0.10
+        self.find_kitten_chance = 0.25
+        self.find_item_chance = 0.7
         self.find_food_chance = 0.9
         self.kitten_death_chance = 0.3
         
@@ -230,6 +231,7 @@ class Game(object):
         score = level + kats + items + exp
         
         print("You scored: " + str(score))
+        print (self.version)
         
         sys.exit()
     
@@ -334,6 +336,7 @@ class Game(object):
     
     def run(self):
         
+        print(self.version)
         self.player.intro()
         self._setDifficulty()
         while self.running:
@@ -349,6 +352,4 @@ class Game(object):
     
 
 if __name__ == "__main__":
-    VERSION = 78
-    print(VERSION)
     Game().run()

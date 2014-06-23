@@ -75,19 +75,24 @@ class Player(object):
         
         return int(round((self._insanity ** 2)/50)) -1
     
-    def getCatBonus(self, count):
+    def getCatBonus(self, count, state):
         
+        stats = {"attacking": int(round(self._insanity/5))-1,
+                "defending": int(round(self._courage/5))-1}
         number_of_cats = random.randint(0, count)
-        cat_bonus = random.sample(self.kennel, number_of_cats)
+        cat_sample = random.sample(self.kennel, number_of_cats)
+        cat_bonus = sum([i.level for i in cat_sample])
+        if cat_bonus:
+            cat_bonus += stats[state]
         return cat_bonus, number_of_cats
     
     def getDamage(self):
         """Returns total damage and number of attacking kittens"""
         
         weapon_dmg = self._weapon.getDamage()
-        cat_bonus, att_cats = self.getCatBonus(self.attacking_kittens)
-        true_dmg = weapon_dmg + sum([i.level for i in cat_bonus]) +\
-                self.getBonusDamageFromInsanity()
+        cat_bonus, att_cats = self.getCatBonus(self.attacking_kittens,
+                                               "attacking")
+        true_dmg = weapon_dmg + cat_bonus + self.getBonusDamageFromInsanity()
         return true_dmg, att_cats
         
     def adoptKitten(self, kitten, special=False):

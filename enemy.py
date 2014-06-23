@@ -36,8 +36,8 @@ class Zombie(object):
         if "restrained" in self.debuffs:
             return 0, 0
         
-        def_cats, num_cats = player.getCatBonus(player.defending_kittens)
-        mitigation = sum([i.level for i in def_cats])
+        mitigation, num_cats = player.getCatBonus(player.defending_kittens,
+                                                "defending")
         raw_dmg = random.randint(self._damage[0], self._damage[1])
         
         true_dmg = raw_dmg - mitigation
