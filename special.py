@@ -76,7 +76,7 @@ def mediCatSpecial(self, player=None, zombie=None):
 
 def ninjaCatSpecial(self, player=None, zombie=None):
     
-    dmg = int(round(self.level * (self.level/6) + 5))
+    dmg = int(round(self.level * (self.level/2) + 5.5))
     zombie.updateHealth(-dmg)
     print("Ninjacat jumps out from %s dealing %s damage to %s!" % (
             random.choice(NINJA_CAT_HDING_PLACES), dmg, zombie.name))
@@ -110,15 +110,15 @@ SPECIAL_CATS = [
                  "post": True},
                 {"name": "Ninjacat",
                  "unbound_method": ninjaCatSpecial,
-                 "activation_chance": 0.13,
+                 "activation_chance": 0.10,
                  "post": False},
                 {"name": "Spasticat",
                  "unbound_method": spasticCatSpecial,
-                 "activation_chance": 0.10,
+                 "activation_chance": 0.15,
                  "post": False},
                 {"name": "Firecat",
                  "unbound_method": fireCatSpecial,
-                 "activation_chance": 0.10,
+                 "activation_chance": 0.5,
                  "post": False},
                 ]
 
