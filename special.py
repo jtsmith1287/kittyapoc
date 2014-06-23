@@ -83,7 +83,7 @@ def ninjaCatSpecial(self, player=None, zombie=None):
 
 def spasticCatSpecial(self, player=None, zombie=None):
     
-    self.activation_chance = self.activation_chance + self.level/50
+    self.activation_chance = 0.1 + self.level/50
     zombie.debuffs.add("restrained")
     print(self.name, random.choice(SPASTIC_CAT_STUFF) % zombie.name)
 
