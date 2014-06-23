@@ -153,7 +153,7 @@ class Player(object):
             print(LEVEL_UP_TEXT % (random.choice(CRAZY_WORDS),
                                    random.choice(BRAVE_WORDS)))
             self.newStats()
-            self.xp = [0, int(round(self.xp[1] + (self.level/1.3)))]
+            self.xp = [0, int(round(self.xp[1] + (self.level/3)))]
             self.level += 1
         self.checkKittenLevels()
     

@@ -41,7 +41,7 @@ class TestGame(unittest.TestCase):
         game.difficulty = 1.25
         game._findKitten()
         game._findZombie()
-
+        
 
 if __name__ == "__main__":
     unittest.main()

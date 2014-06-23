@@ -12,7 +12,12 @@ WEAPON_LIST = [
                ("Brick", (2, 3), None),
                ("Shovel", (3, 4), None),
                ("Revolver", (5, 7), None),
-               ("Shotgun", (10, 12), None)
+               ("Crossbow", (10, 12), None),
+               ("Shotgun", (12, 14), None),
+               ("AR-15 Assult Rifle", (14, 17), None),
+               ("Katana", (18, 20), None),
+               ("Chainsaw", (21, 25), None),
+               ("Rocket Launcher", (30, 30), None),
              ]
 
 FOOD_LIST = [
@@ -33,9 +38,10 @@ FOOD_LIST = [
 
 def generateNextWeapon():
     
-    name, dmg, hlg = WEAPON_LIST.pop(0)
-    item = Item(name, dmg, hlg)
-    return item
+    if WEAPON_LIST:
+        name, dmg, hlg = WEAPON_LIST.pop(0)
+        item = Item(name, dmg, hlg)
+        return item
 
 def getRandomFood():
     

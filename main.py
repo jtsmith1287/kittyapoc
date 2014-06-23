@@ -77,7 +77,7 @@ class Game(object):
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.3
         self.find_item_chance = 0.10
-        self.find_food_chance = 0.92
+        self.find_food_chance = 0.9
         self.kitten_death_chance = 0.3
         
         self._turn_choices = {"1) Venture further into the darkness?": self._venture,
@@ -111,16 +111,19 @@ class Game(object):
         
         item_chance = random.random()
         # determine whether a weapon or food was found
-        if item_chance < self.find_food_chance - self.player.insanityChanceBonus():
+        if item_chance < self.find_food_chance:
             item = getRandomFood()
             self.player.inventory.append(item)
             print("You found a %s" % item.name)
         else:
             item = generateNextWeapon()
-            print("You found a %s" % item.name)
-            print("You toss your %s to the ground in favor of your new %s!" % (
-                    self.player._weapon, item))
-            self.player.equip(item)
+            if item:
+                print("You found a %s" % item.name)
+                print("You toss your %s to the ground in favor of your new %s!" % (
+                        self.player._weapon, item))
+                self.player.equip(item)
+            else:
+                print("You thought you saw something interesting... you must be going crazy.")
     
     def _findKitten(self):
         
@@ -162,7 +165,9 @@ class Game(object):
                                    zombie.name, dmg_dealt))
             
             if "burning" in zombie.debuffs:
-                print("%s is on fire! It burns for %s damage!" % (zombie.name, zombie.burning_damage))
+                print("%s is on fire! It burns for %s damage!" % (
+                        zombie.name, zombie.burning_damage))
+                zombie.updateHealth(-zombie.burning_damage)
             if "restrained" in zombie.debuffs:
                 print(ZOMBIE_RESTRAINED)
                 zombie.debuffs.discard("restrained")
@@ -186,7 +191,6 @@ class Game(object):
                 print(END_COMBAT % zombie.name)
                 in_combat = False
                 self.player.xp[0] += 1
-                self.player.startLevelUp()
                 for cat in self.player.kennel:
                     cat.xp[0] += 1
                 for scats in self.player.special_kennel:
@@ -207,6 +211,8 @@ class Game(object):
                 print("    " + cat + " was killed.")
                 self.player.defending_kittens -= len(dead_kittens)
     
+        self.player.startLevelUp()
+
     def _killAKitten(self):
         
         dead_cat = self.player.kennel.pop(

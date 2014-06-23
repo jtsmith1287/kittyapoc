@@ -12,7 +12,8 @@ NAMES = ["nomming", "gurgling", "drooling", "bloody", "filthy", "crawling",
          "gross", "one-eyed", "bad-breath", "growling", "rotting", "skinless",
          "putrid", "obnoxiously obese", "faceless", "decaying", "stinky", "smelly",
          "fragrant", "frenzied", "pocket protector", "awkward", "buff",
-         "big McLarge-huge", "disgusting", "huge", "morbidly obese"]
+         "big McLarge-huge", "disgusting", "huge", "morbidly obese", "canine",
+         "feline", "rat"]
 
 
 class Zombie(object):
@@ -37,7 +38,7 @@ class Zombie(object):
         
         def_cats, num_cats = player.getCatBonus(player.defending_kittens)
         mitigation = sum([i.level for i in def_cats])
-        raw_dmg = random.randint(self._damage[0],self._damage[1])
+        raw_dmg = random.randint(self._damage[0], self._damage[1])
         
         true_dmg = raw_dmg - mitigation
         if true_dmg < 0:
