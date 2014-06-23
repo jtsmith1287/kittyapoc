@@ -75,21 +75,15 @@ class Player(object):
         
         return int(round((self._insanity ** 2)/50)) -1
     
-    def getCatBonus(self, count):
-        
-        total = 0
-        for i in range(count):
-            total += random.choice(self.kennel).level
-        return total
-    
     def getDamage(self):
         """Returns total damage and number of attacking kittens"""
         
         weapon_dmg = self._weapon.getDamage()
-        cat_bonus = self.getCatBonus(self.attacking_kittens)
-        bonus = random.randint(0, cat_bonus)
-        true_dmg = weapon_dmg + bonus + self.getBonusDamageFromInsanity()
-        return true_dmg, bonus
+        att_cats = random.randint(0, self.attacking_kittens)
+        cat_bonus = random.sample(self.kennel, att_cats)
+        true_dmg = weapon_dmg + sum([i.level for i in cat_bonus]) +\
+                self.getBonusDamageFromInsanity()
+        return true_dmg, att_cats
         
     def adoptKitten(self, kitten, special=False):
         
