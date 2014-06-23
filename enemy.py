@@ -25,7 +25,7 @@ class Zombie(object):
         self.difficulty = difficulty
         self.debuffs = set([])
         self.burning_damage = 0
-        self.health = int(round(2.9 * level * difficulty))
+        self.health = int(round((0.95*self.level^1.9)* difficulty))
         self.m_health = self.health
         self._damage = (int(round(0.7 * level * difficulty)),
                         int(round(1.0 * level * difficulty)))
