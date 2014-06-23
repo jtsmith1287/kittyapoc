@@ -77,9 +77,9 @@ class Player(object):
     
     def getCatBonus(self, count):
         
-        att_cats = random.randint(0, self.attacking_kittens)
-        cat_bonus = random.sample(self.kennel, att_cats)
-        return cat_bonus, att_cats
+        number_of_cats = random.randint(0, count)
+        cat_bonus = random.sample(self.kennel, number_of_cats)
+        return cat_bonus, number_of_cats
     
     def getDamage(self):
         """Returns total damage and number of attacking kittens"""

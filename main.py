@@ -124,6 +124,8 @@ class Game(object):
         
         print("You found a wee kitty! Awwww.")
         chance = random.random()
+        if len(self.player.special_kennel) == 4:
+          chance = 1
         if chance > 0.16:
             name = names.generateName()
             print("The kitty mews at you and you see a collar with a tag reading: %s" % (
@@ -184,6 +186,8 @@ class Game(object):
                 self.player.xp[0] += 1
                 self.player.startLevelUp()
                 for cat in self.player.kennel:
+                    cat.xp[0] += 1
+                for scats in self.player.special_kennel:
                     cat.xp[0] += 1
             
         dead_kittens = []
