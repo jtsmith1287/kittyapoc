@@ -233,7 +233,7 @@ class Game(object):
         time.sleep(2)
         chance = random.random()
         # Check if an item, kitten, or enemy was found
-        if chance < self.find_item_chance:
+        if chance < self.find_item_chance + self.player.insanityChanceBonus()/2:
             self.acquireItem()
         elif chance < self.find_kitten_chance + self.player.insanityChanceBonus():
             self._findKitten()
