@@ -349,4 +349,6 @@ class Game(object):
     
 
 if __name__ == "__main__":
+    VERSION = 77
+    print(VERSION)
     Game().run()
