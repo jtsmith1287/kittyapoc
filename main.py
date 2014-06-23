@@ -12,11 +12,13 @@ from item import getRandomFood, generateNextWeapon
 import time
 import random
 import sys
+import platform
 
 
 SHOW_STATS_STRING = """
 Your current health is %s
 You are level %s.
+%s
 Your courage is %s.
 Your insanity is %s.
 You are wielding a %s.
@@ -73,8 +75,8 @@ class Game(object):
         
         self.running = True
         self.difficulty = [1, 1.25, 1.5]
-        self.find_kitten_chance = 0.37
-        self.find_item_chance = 0.15
+        self.find_kitten_chance = 0.3
+        self.find_item_chance = 0.10
         self.find_food_chance = 0.92
         self.kitten_death_chance = 0.3
         
@@ -203,6 +205,7 @@ class Game(object):
             for cat in dead_kittens:
                 time.sleep(1)
                 print("    " + cat + " was killed.")
+                self.player.defending_kittens -= len(dead_kittens)
     
     def _killAKitten(self):
         
@@ -277,6 +280,7 @@ class Game(object):
         items = "\n".join(["%s x%s" % (k,v) for k,v in self.player.checkInventory().items()])
         print(SHOW_STATS_STRING % (self.player.health,
                                    self.player.level,
+                                   self.player.experienceBar(),
                                    self.player.updateCourage(), 
                                    self.player.updateInsanity(),
                                    self.player._weapon,
@@ -339,4 +343,7 @@ class Game(object):
     
 
 if __name__ == "__main__":
+    if eval(platform.python_version) < 3.4:
+        print("Herding cats through the apocalypse requires at least python 3.4")
+        sys.exit()
     Game().run()
