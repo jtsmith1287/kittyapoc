@@ -37,8 +37,7 @@ class Zombie(object):
         
         def_cats, num_cats = player.getCatBonus(player.defending_kittens)
         mitigation = sum([i.level for i in def_cats])
-        raw_dmg = random.randint(int(self._damage[0] * self.difficulty),
-                                 int(self._damage[1] * self.difficulty))
+        raw_dmg = random.randint(self._damage[0],self._damage[1])
         
         true_dmg = raw_dmg - mitigation
         if true_dmg < 0:

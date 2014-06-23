@@ -343,7 +343,4 @@ class Game(object):
     
 
 if __name__ == "__main__":
-    if eval(platform.python_version) < 3.4:
-        print("Herding cats through the apocalypse requires at least python 3.4")
-        sys.exit()
     Game().run()
