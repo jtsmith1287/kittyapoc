@@ -188,7 +188,7 @@ class Game(object):
                 for cat in self.player.kennel:
                     cat.xp[0] += 1
                 for scats in self.player.special_kennel:
-                    cat.xp[0] += 1
+                    scats.xp[0] += 1
             
         dead_kittens = []
         for i in range(defending_kittens):
