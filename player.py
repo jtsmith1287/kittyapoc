@@ -33,6 +33,7 @@ class Player(object):
         self._courage = 10
         self.health = self._courage * 2
         self.kennel = []
+        self.special_kennel = []
         self.attacking_kittens = 0
         self.defending_kittens = 0
         self.inventory = []
@@ -72,25 +73,30 @@ class Player(object):
     
     def getBonusDamageFromInsanity(self):
         
-        return int(round(self._insanity / 3.0))
+        return int(round((self._insanity ** 2)/50)) -1
+    
+    def getCatBonus(self, count):
+        
+        total = 0
+        for i in range(count):
+            total += random.choice(self.kennel).level
+        return total
     
     def getDamage(self):
         """Returns total damage and number of attacking kittens"""
         
         weapon_dmg = self._weapon.getDamage()
-        bonus = random.randint(0, self.attacking_kittens)
+        cat_bonus = self.getCatBonus(self.attacking_kittens)
+        bonus = random.randint(0, cat_bonus)
         true_dmg = weapon_dmg + bonus + self.getBonusDamageFromInsanity()
         return true_dmg, bonus
         
-    def adoptKitten(self, kitten):
+    def adoptKitten(self, kitten, special=False):
         
-        self.kennel.append(kitten)
-    
-    def getAccKittyPower(self):
-        
-        power = 0
-        for cat in self.kennel:
-            power += cat.level
+        if special:
+            self.special_kennel.append(kitten)
+        else:
+            self.kennel.append(kitten)
     
     def checkInventory(self):
         
@@ -143,6 +149,15 @@ class Player(object):
             self.newStats()
             self.xp = [0, self.xp[1] * 2]
             self.level += 1
+        self.checkKittenLevels()
+    
+    def checkKittenLevels(self):
+        
+        for cat in self.kennel:
+            cat.levelUp()
+        
+        for special_cat in self.special_kennel:
+            special_cat.levelUp()
     
     def intro(self):
         

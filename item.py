@@ -10,16 +10,24 @@ WEAPON_LIST = [
                ("Purse", (1, 1), None),
                ("Walking Stick", (1, 2), None),
                ("Brick", (2, 3), None),
-               ("Shovel", (3, 4), None)
+               ("Shovel", (3, 4), None),
+               ("Revolver", (5, 7), None),
+               ("Shotgun", (10, 12), None)
              ]
 
 FOOD_LIST = [
-             ("stale bread", None, (1,2)),
-             ("rotten apple", None, (2, 2)),
-             ("dog chewed steak", None, (3, 5)),
-             ("Snapple", None, (3, 4)),
-             ("granola bar", None, (4, 7)),
-             ("still hot pizza?", None, (10, 10)),
+             ("stale bread", None, (3,5)),
+             ("stale bagels", None, (3,5)),
+             ("rotten apple", None, (4, 5)),
+             ("rotten banana", None, (4, 5)),
+             ("dog chewed steak", None, (5, 7)),
+             ("half-eaten pie", None, (5, 7)),
+             ("Snapple", None, (5, 6)),
+             ("Beer", None, (5, 6)),
+             ("granola bar", None, (6, 8)),
+             ("cliff bar", None, (6, 8)),
+             ("still hot pizza?", None, (12, 15)),
+             ("5-Hour Energy Drink", None, (17, 20))
              ]
 
 

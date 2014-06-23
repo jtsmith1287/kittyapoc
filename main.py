@@ -6,6 +6,7 @@ Main module to run all other game components.
 import player
 import enemy
 import kitten
+import special
 import names
 from item import getRandomFood, generateNextWeapon
 import time
@@ -26,9 +27,12 @@ You possess the following items:
 
 INVALID = "Invalid choice, please try again.\n"
 
-COMBAT_TEXT = """
+COMBAT_ATTACK = """
     With %s in hand, you and %s kittens attack the %s for %s damage!
-    The %s attacks you for %s damage in return!
+"""
+COMBAT_DEFEND = """    The %s attacks you and %s kittens for %s damage in return!
+"""
+ZOMBIE_RESTRAINED = """The zombie begins to recover...
 """
 
 END_COMBAT = """
@@ -69,7 +73,7 @@ class Game(object):
         
         self.running = True
         self.difficulty = [1, 1.25, 1.5]
-        self.find_kitten_chance = 0.3
+        self.find_kitten_chance = 0.37
         self.find_item_chance = 0.15
         self.find_food_chance = 0.92
         self.kitten_death_chance = 0.3
@@ -80,7 +84,7 @@ class Game(object):
                               "4) Poke your cats?": self._pokeCats,
                               "5) How am I doing?": self.detailed_info}
         
-        self.player = player.Player().intro()
+        self.player = player.Player()
         self.player.equip(generateNextWeapon())
     
     def _setDifficulty(self):
@@ -118,13 +122,25 @@ class Game(object):
     
     def _findKitten(self):
         
-        name = names.generateName()
         print("You found a wee kitty! Awwww.")
-        print("The kitty mews at you and you see a collar with a tag reading: %s" % (
-                name))
-        new_kitten = kitten.Kitten(name)
-        self.player.adoptKitten(new_kitten)
-        
+        chance = random.random()
+        if chance > 0.16:
+            name = names.generateName()
+            print("The kitty mews at you and you see a collar with a tag reading: %s" % (
+                    name))
+            new_kitten = kitten.Kitten(name)
+            self.player.adoptKitten(new_kitten)
+        else:
+            new_kitten = special.spawnSpecialKitty()
+            print("But this is no ordinary kitten!!! It's %s!" % new_kitten.name)
+            self.player.adoptKitten(new_kitten, True)
+    
+    def specialCatStuff(self, zombie, post=False):
+    
+        for cat in self.player.special_kennel:
+            if cat.post == post and random.random() < cat.activation_chance:
+                cat.specialMove(cat, player=self.player, zombie=zombie)
+    
     def _findZombie(self):
         
         zombie = enemy.Zombie(self.player.level, self.difficulty)
@@ -132,19 +148,32 @@ class Game(object):
         in_combat = True
         while in_combat:
             
-            time.sleep(2.5)
+            time.sleep(2)
+            self.specialCatStuff(zombie, False)
+            time.sleep(2)
             
             dmg_dealt, attacking_kittens = self.player.getDamage()
-            dmg_recv, defending_kittens = zombie.getDamage(self.player.defending_kittens)
-            print(COMBAT_TEXT %(self.player._weapon, attacking_kittens, 
-                    zombie.name, dmg_dealt, zombie.name, dmg_recv))
+            dmg_recv, defending_kittens = zombie.getDamage(self.player)
+            print(COMBAT_ATTACK % (self.player._weapon, attacking_kittens,
+                                   zombie.name, dmg_dealt))
+            
+            if "burning" in zombie.debuffs:
+                print("%s is on fire! It burns for %s damage!" % (zombie.name, zombie.burning_damage))
+            if "restrained" in zombie.debuffs:
+                print(ZOMBIE_RESTRAINED)
+                zombie.debuffs.discard("restrained")
+            else:
+                print(COMBAT_DEFEND % (zombie.name, defending_kittens, dmg_recv))
             
             # Deal Damage
             self.player.updateHealth(-dmg_recv)
             zombie.updateHealth(-dmg_dealt)
-            print(self.player.healthBar(), " | ", zombie.healthBar())
+            for letter in self.player.healthBar() + " | " + zombie.healthBar() + "\n":
+                time.sleep(0.02)
+                print(letter, end="", flush=True)
             
-            time.sleep(2)
+            time.sleep(1)
+            self.specialCatStuff(zombie, True)
             
             if self.player.health <= 0:
                 in_combat = False
@@ -160,13 +189,16 @@ class Game(object):
         dead_kittens = []
         for i in range(defending_kittens):
             poor_luck = random.random()
-            if poor_luck < self.kitten_death_chance - self.player.getKittenCourageBonus():
+            chance = self.kitten_death_chance - self.player.getKittenCourageBonus()
+            if poor_luck < chance:
                 dead_kittens.append(self._killAKitten())
         
         if dead_kittens:
-            print("Oh no... oh I'm so sorry. There's been an accident.")
+            time.sleep(1)
+            print("    Oh no... oh I'm so sorry. There's been an accident.")
             for cat in dead_kittens:
-                print(cat + " was killed.")
+                time.sleep(1)
+                print("    " + cat + " was killed.")
     
     def _killAKitten(self):
         
@@ -218,7 +250,7 @@ class Game(object):
         if self.player.kittenCount():
             for cat in self.player.kennel:
                 cat.displayInfo()
-            
+            print("You have %s kittens" % len(self.player))
             response = input(CAT_HERDING).split()
             if response and len(response) == 2:
                 for i in response:
@@ -258,27 +290,32 @@ class Game(object):
         else:
             print("You haven't collected anything yet.")
             return None, None # Don't even know...
-        for x,k,v in enumerate(items):
-            print(str(int(x)+1) + ")", k, "x" + str(v))
+        for x,k in enumerate(items):
+            print(str(int(x)+1) + ")", k[0], "x" + str(k[1]))
         choice = input(":")
-        if choice and choice.isdigit():
+        if choice and choice.isdigit() and int(choice) <= len(items):
             # This just seems bad... this could be better.
             index = int(choice) - 1
-            item = items[index][0]
+            chosen_item = items[index][0]
+            item = None
             for x,i in enumerate(self.player.inventory):
-                if i.name == item:
+                if i.name == chosen_item:
                     item = self.player.inventory.pop(x)
                     break
-            #TODO: This should become a "getItemAbility"
-            healing = item.getHealing()
-            new_health = self.player.updateHealth(healing)
-            print("You have been healed for %s. You now have %s health." % (
-                    healing - new_health, new_health))
+            if item:
+                #TODO: This should become a "getItemAbility"
+                healing = item.getHealing()
+                new_health = self.player.updateHealth(healing)
+                print("You have been healed for %s. You now have %s health." % (
+                        healing, new_health))
+            else:
+                print(INVALID)
         else:
             print(INVALID)
     
     def run(self):
         
+        self.player.intro()
         self._setDifficulty()
         while self.running:
             print()

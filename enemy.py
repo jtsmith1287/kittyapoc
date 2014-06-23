@@ -6,28 +6,36 @@ Module containing all enemy methods
 import random
 
 
-NAMES = ["Nomming", "Gurgling", "Drooling", "Bloody", "Filthy", "Crawling",
-         "Aggressive", "Frightening", "Terrifying", "Hungry", "Famished",
-         "Leg-less", "Arm-less", "One-armed", "Moaning", "Grotesque,", "Nasty",
-         "Gross", "One-eyed", "Bad-breath", "Growling", "Rotting", "Skinless",
-         "Putrid", "Obnoxiously Obese", "Faceless", "Decaying", "Stinky", "Smelly",
-         "Fragrant", "Frenzied", "Pocket Protector", "Awkward", "Buff",
-         "Big McLarge-Huge", "Disgusting", "Huge"]
+NAMES = ["nomming", "gurgling", "drooling", "bloody", "filthy", "crawling",
+         "aggressive", "frightening", "terrifying", "hungry", "famished",
+         "leg-less", "arm-less", "one-armed", "moaning", "grotesque,", "nasty",
+         "gross", "one-eyed", "bad-breath", "growling", "rotting", "skinless",
+         "putrid", "obnoxiously obese", "faceless", "decaying", "stinky", "smelly",
+         "fragrant", "frenzied", "pocket protector", "awkward", "buff",
+         "big McLarge-huge", "disgusting", "huge", "morbidly obese"]
 
 
 class Zombie(object):
     
     def __init__(self, level, difficulty):
         
-        self.name = random.choice(NAMES) + " Zombie"
+        self.name = random.choice(NAMES) + " zombie"
         self.level = level
         self.difficulty = difficulty
-        self.health = int(round(1.49 * level * difficulty))
+        self.debuffs = set([])
+        self.burning_damage = 0
+        self.health = int(round(2.7 * level * difficulty))
         self.m_health = self.health
-        self._damage = (1 * level, int(1.3 * level))
+        self._damage = (int(round(0.6 * level * difficulty)),
+                        int(round(0.8 * level * difficulty)))
         
-    def getDamage(self, mitigation, is_random=True):
+    def getDamage(self, player, is_random=True):
         """Returns total damage and mitigation value"""
+        
+        if "restrained" in self.debuffs:
+            return 0, 0
+        
+        mitigation = player.getCatBonus(player.defending_kittens)
         
         raw_dmg = random.randint(int(self._damage[0] * self.difficulty),
                                  int(self._damage[1] * self.difficulty))
@@ -37,7 +45,7 @@ class Zombie(object):
         true_dmg = raw_dmg - mitigation
         if true_dmg < 0:
             true_dmg = 0
-            
+        
         return true_dmg, mitigation
     
     def healthBar(self):
