@@ -114,6 +114,13 @@ class Player(object):
     def getKittenCourageBonus(self):
         
         return self._courage * 0.01
+
+    def experienceBar(self):
+
+        bar = "#"* int(((float(self.xp[0]) / (self.xp[1])) * 100)/5)
+        space = "-"* (20 - int(((float(self.xp[0]) / (self.xp[1]) * 100)/5)))
+        
+        return "XP: %s [%s%s] %s" % (self.xp[0], bar, space, self.xp[1])
     
     def healthBar(self):
         
@@ -128,11 +135,11 @@ class Player(object):
         while not good:
             answer = input(BRAVE_OR_CRAZY)
             if answer == "brave":
-                self.updateCourage(1)
+                self.updateCourage(2)
                 print("You go, Grandma!\n")
                 good = True
             elif answer == "insane":
-                self.updateInsanity(1)
+                self.updateInsanity(2)
                 print("Ya, thought so...\n")
                 good = True
             else:
@@ -146,7 +153,7 @@ class Player(object):
             print(LEVEL_UP_TEXT % (random.choice(CRAZY_WORDS),
                                    random.choice(BRAVE_WORDS)))
             self.newStats()
-            self.xp = [0, self.xp[1] * 2]
+            self.xp = [0, int(round(self.xp[1] + (self.level/1.3)))]
             self.level += 1
         self.checkKittenLevels()
     
