@@ -108,7 +108,7 @@ class Game(object):
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.25
         self.find_item_chance = 0.12
-        self.find_food_chance = 0.09
+        self.find_food_chance = 0.9
         self.kitten_death_chance = 0.3
         
         self._turn_choices = {"1) Venture further into the darkness?": self._venture,
@@ -211,6 +211,7 @@ class Game(object):
                 scats.xp[0] += 1
             if zombie.boss:
                 self.player.xp[0] = self.player.xp[1]
+                self
             return False
         else:
             return True
@@ -398,6 +399,7 @@ class Game(object):
         print(self.version)
         self.player.intro()
         self._setDifficulty()
+        self._findKitten()
         while self.running:
             print()
             self.beginningOfTurnPrompt()

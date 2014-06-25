@@ -78,12 +78,14 @@ class Player(object):
     
     def getCatBonus(self, count, state):
         
-        stats = {"attacking": int(round(self._insanity/5))-1,
-                "defending": int(round(self._courage/5))-1}
+        stats = {"attacking": int(round(self._insanity/6))-1,
+                "defending": int(round(self._courage/6))-1}
+        if stats[state] > self.__dict__["%s_kittens" % state]:
+            stats[state] = self.__dict__["%s_kittens" % state]
         number_of_cats = random.randint(0, count)
         cat_sample = random.sample(self.kennel, number_of_cats)
         cat_bonus = sum([i.level for i in cat_sample])
-        if cat_bonus:
+        if self.__dict__["%s_kittens" % state]:
             cat_bonus += stats[state]
         return cat_bonus, number_of_cats
     
