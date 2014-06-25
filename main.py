@@ -103,7 +103,7 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 83
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 84
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.28
         self.find_item_chance = 0.13
@@ -203,7 +203,8 @@ class Game(object):
                 return True
             self.WinCheck(zombie)
             print(END_COMBAT % zombie.name)
-            self.player.xp[0] += 1
+            self.player.xp[0] = int(self.player.xp[1]/2)
+            self.player.health = self.player._courage * 2
             for cat in self.player.kennel:
                 cat.xp[0] += 1
             for scats in self.player.special_kennel:
