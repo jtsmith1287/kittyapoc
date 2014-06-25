@@ -155,9 +155,12 @@ class Player(object):
         
         self.health = self._courage * 2
     
-    def startLevelUp(self):
+    def startLevelUp(self, rewards=None):
         
         if self.xp[0] >= self.xp[1]:
+            if rewards:
+                for reward in rewards:
+                    reward()
             print(LEVEL_UP_TEXT % (random.choice(CRAZY_WORDS),
                                    random.choice(BRAVE_WORDS)))
             self.newStats()

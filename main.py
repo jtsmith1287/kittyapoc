@@ -98,7 +98,6 @@ Nevermind, you totaly still lose.
 """
 
 
-
 class Game(object):
     
     def __init__(self):
@@ -106,8 +105,8 @@ class Game(object):
         self.running = True
         self.version = "Crazy Cat Lady Apocalypse v%s" % 83
         self.difficulty = [1, 1.25, 1.5]
-        self.find_kitten_chance = 0.25
-        self.find_item_chance = 0.12
+        self.find_kitten_chance = 0.28
+        self.find_item_chance = 0.13
         self.find_food_chance = 0.9
         self.kitten_death_chance = 0.3
         
@@ -250,7 +249,7 @@ class Game(object):
             zombie.updateHealth(-dmg_dealt)
             for letter in self.player.healthBar() + " | " + zombie.healthBar() + "\n":
                 time.sleep(0.02)
-                print(letter, end="", flush=True)
+                print(letter, end="")
             
             time.sleep(1)
             self.specialCatStuff(zombie, True)
@@ -272,7 +271,7 @@ class Game(object):
                 print("    " + cat + " was killed.")
                 self.player.defending_kittens -= len(dead_kittens)
     
-        self.player.startLevelUp()
+        self.player.startLevelUp(rewards=[self._findKitten, self.acquireItem])
 
     def _killAKitten(self):
         
