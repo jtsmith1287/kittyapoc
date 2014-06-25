@@ -49,8 +49,8 @@ going to happen eventually. R.I.P., you old hag."""
 DETAILED_INFO_TEXT = """
 Your insanity (%s) pushes you to do really dumb things, like digging through
 old dumpsters and breaking into dark and eerie animal shelters in search for
-kittens in need of rescuing. You are more apt to flailing uncontrollably during
-combat which proves to be quite effective against zombies (+%s bonus dmg).
+kittens in need of rescuing (%s%%). You are more apt to flailing uncontrollably
+during combat which proves to be quite effective against zombies (+%s bonus dmg).
 
 Your courage (%s) is your fortitude. It's what's keeping you pushing forward
 and enables you to stand strong when you're toe to toe with the flesh eating
@@ -203,22 +203,23 @@ class Game(object):
                 return True
             self.WinCheck(zombie)
             print(END_COMBAT % zombie.name)
-            self.player.xp[0] = int(self.player.xp[1]/2)
+            self.player.xp[0] = + 1
             self.player.health = self.player._courage * 2
             for cat in self.player.kennel:
                 cat.xp[0] += 1
             for scats in self.player.special_kennel:
                 scats.xp[0] += 1
             if zombie.boss:
-                self.player.xp[0] = self.player.xp[1]
-                self
+                self.player.xp[0] = int(self.player.xp[1]/2)
+                for i in range(int(zombie.rounds/2)):
+                  self.acquireItem()
             return False
         else:
             return True
     
     def _findZombie(self):
         
-        if self.player.level % 7 == 0 and self.player.level in self.player.boss_fights:
+        if self.player.level % 5 == 0 and self.player.level in self.player.boss_fights:
             zombie = enemy.Boss(self.player.level, self.difficulty)
         else:
             zombie = enemy.Zombie(self.player.level, self.difficulty)
@@ -358,6 +359,7 @@ class Game(object):
     def detailed_info(self):
         
         print(DETAILED_INFO_TEXT % (self.player.updateInsanity(),
+                                    (self.find_kitten_chance + self.player.insanityChanceBonus()) * 100,
                                     self.player.getBonusDamageFromInsanity(),
                                     self.player.updateCourage(),
                                     self.player.getKittenCourageBonus() * 100,

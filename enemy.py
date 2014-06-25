@@ -76,7 +76,7 @@ class Boss(Zombie):
         
         total_cats = max_chance = len(player.kennel)
         if total_cats:
-            max_chance = total_cats/self.rounds
+            max_chance = int(total_cats/self.rounds)
             if max_chance > total_cats:
                 max_chance = len(player.kennel)
                 
@@ -88,12 +88,12 @@ class Boss(Zombie):
                     player.kennel.remove(cat)
                     print(self.name, "just ate", cat.name)
                     less_attacking = random.randint(0, 1)
-                    if less_attacking:
+                    if less_attacking and player.attacking_kittens != 0:
                         player.attacking_kittens -= 1
                         if player.attacking_kittens < 0:
                             player.attacking_kittens = 0
                             player.defending_kittens -= 1
-                    else:
+                    elif less_defending and player.defending_kittens != 0:
                         player.defending_kittens -= 1
                         if player.defending_kittens < 0:
                             player.defending_kittens = 0

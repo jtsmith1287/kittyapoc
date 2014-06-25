@@ -40,7 +40,7 @@ class Player(object):
         self._weapon = None
         self.level = 1
         self.xp = [0, 1]
-        self.boss_fights = [i*7 for i in range(20)]
+        self.boss_fights = [i*5 for i in range(20)]
         
     def __len__(self):
         
@@ -82,7 +82,7 @@ class Player(object):
                 "defending": int(round(self._courage/6))-1}
         if stats[state] > self.__dict__["%s_kittens" % state]:
             stats[state] = self.__dict__["%s_kittens" % state]
-        number_of_cats = random.randint(0, count)
+        number_of_cats = random.randint(0, count if count >= 0 else 0)
         cat_sample = random.sample(self.kennel, number_of_cats)
         cat_bonus = sum([i.level for i in cat_sample])
         if self.__dict__["%s_kittens" % state]:
