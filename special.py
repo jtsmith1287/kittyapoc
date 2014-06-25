@@ -70,7 +70,7 @@ FIRECAT_AWESOMENESS = ["dawns dark shades, flicking a match at the %s.",
 def mediCatSpecial(self, player=None, zombie=None):
     
     player.updateHealth(self.level)
-    print("Medicat just %s for %s healing" % (
+    print(self.name, "just %s for %s healing" % (
             random.choice(MEDICAT_HEALING), self.level))
 
 
@@ -78,7 +78,7 @@ def ninjaCatSpecial(self, player=None, zombie=None):
     
     dmg = int(round(self.level * (self.level/2) + 5.5))
     zombie.updateHealth(-dmg)
-    print("Ninjacat jumps out from %s dealing %s damage to %s!" % (
+    print(self.name,"jumps out from %s dealing %s damage to %s!" % (
             random.choice(NINJA_CAT_HDING_PLACES), dmg, zombie.name))
 
 def spasticCatSpecial(self, player=None, zombie=None):
@@ -106,21 +106,28 @@ def spawnSpecialKitty():
 
 SPECIAL_CATS = [
                 {"name": "Medicat",
-                 "unbound_method": mediCatSpecial,
+                 "unbound_method": [mediCatSpecial],
                  "activation_chance": 0.5,
                  "post": True},
                 {"name": "Ninjacat",
-                 "unbound_method": ninjaCatSpecial,
-                 "activation_chance": 0.10,
-                 "post": False},
+                 "unbound_method": [ninjaCatSpecial],
+                 "activation_chance": 0.2,
+                 "post": True},
                 {"name": "Spasticat",
-                 "unbound_method": spasticCatSpecial,
+                 "unbound_method": [spasticCatSpecial],
                  "activation_chance": 0.1,
                  "post": False},
                 {"name": "Firecat",
-                 "unbound_method": fireCatSpecial,
+                 "unbound_method": [fireCatSpecial],
                  "activation_chance": 0.5,
                  "post": False},
+                {"name": "Mimicat",
+                 "unbound_method": [fireCatSpecial,
+                                    spasticCatSpecial,
+                                    ninjaCatSpecial,
+                                    mediCatSpecial],
+                 "activation_chance": 0.1,
+                 "post": True},
                 ]
 
 
@@ -130,7 +137,7 @@ class SpecialCat(Kitten):
                  post = True):
         super().__init__(self)
         self.name = name
-        self.specialMove = unbound_method
+        self.specialMoves = unbound_method
         self.activation_chance = activation_chance
         self.post = post
         

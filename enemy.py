@@ -24,6 +24,8 @@ class Zombie(object):
         self.level = level
         self.difficulty = difficulty
         self.debuffs = set([])
+        self.boss = False
+        self.rounds = 1
         self.burning_damage = 0
         self.health = int(round((0.7*self.level**2.0)* difficulty))
         self.m_health = self.health
@@ -61,6 +63,41 @@ class Zombie(object):
             self.health += mod
         
         return self.health
+    
         
+class Boss(Zombie):
     
-    
+    def __init__(self, level, difficulty):
+        super().__init__(level, difficulty)
+        self.rounds = level / 7 + 1
+        self.boss = True
+
+    def specialMove(self, player):
+        
+        total_cats = max_chance = len(player.kennel)
+        if total_cats:
+            max_chance = total_cats/self.rounds
+            if max_chance > total_cats:
+                max_chance = len(player.kennel)
+                
+            dead_cats_list = random.sample(player.kennel, 
+                    random.randint(1 if max_chance else 0, max_chance))
+            dead_cat_names = [cat.name for cat in dead_cats_list]
+            for cat in player.kennel:
+                if cat.name in dead_cat_names:
+                    player.kennel.remove(cat)
+                    print(self.name, "just ate", cat.name)
+                    less_attacking = random.randint(0, 1)
+                    if less_attacking:
+                        player.attacking_kittens -= 1
+                        if player.attacking_kittens < 0:
+                            player.attacking_kittens = 0
+                            player.defending_kittens -= 1
+                    else:
+                        player.defending_kittens -= 1
+                        if player.defending_kittens < 0:
+                            player.defending_kittens = 0
+                            player.attacking_kittens -= 1
+        else:
+            print("\n\tIt's just you and this guy...\n")
+                

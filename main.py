@@ -68,13 +68,43 @@ CAT_HERDING_CONFIRM = """
 Ok, so that's %s attacking, and %s defending. You've got %s kittens left.
 """
 
+FREAKY_BOSS_TEXT = """
+The zombie falls to the ground. 
+
+You think it's over... 
+
+You hear gurgling and moaning behind you...
+
+The zombie rises to its feet ...
+
+This fight isn't over.
+"""
+
+GAME_WIN = """
+HOLY HELL... You just beat the end of the world...
+Like seriously. You're invincible. You can now repopulate the world...
+uh...
+
+With cats?
+
+
+........
+
+
+.....
+
+
+Nevermind, you totaly still lose. 
+"""
+
+
 
 class Game(object):
     
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 81
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 83
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.25
         self.find_item_chance = 0.12
@@ -131,7 +161,7 @@ class Game(object):
         print("You found a wee kitty! Awwww.")
         chance = random.random()
         if len(self.player.special_kennel) == 4:
-          chance = 1
+            chance = 1
         if chance > 0.16:
             name = names.generateName()
             print("The kitty mews at you and you see a collar with a tag reading: %s" % (
@@ -147,11 +177,50 @@ class Game(object):
     
         for cat in self.player.special_kennel:
             if cat.post == post and random.random() < cat.activation_chance:
-                cat.specialMove(cat, player=self.player, zombie=zombie)
+                random.choice(cat.specialMoves)(cat, player=self.player, zombie=zombie)
+    
+    def WinCheck(self, zombie):
+        
+        if zombie.boss:
+            if len(self.player.boss_fights) == 1:
+                print(GAME_WIN)
+                self.gameOver()
+            else:
+                self.player.boss_fights.pop(0)
+    
+    def endCombatCheck(self, zombie):
+        
+        if self.player.health <= 0:
+            self.gameOver()
+            return False
+        if zombie.health <= 0:
+            if zombie.boss and zombie.rounds > 1:
+                if self.player.inventory:
+                    self._useItem()
+                print(FREAKY_BOSS_TEXT)
+                zombie.health = zombie.m_health
+                zombie.rounds -= 1
+                zombie.specialMove(self.player)
+                return True
+            self.WinCheck(zombie)
+            print(END_COMBAT % zombie.name)
+            self.player.xp[0] += 1
+            for cat in self.player.kennel:
+                cat.xp[0] += 1
+            for scats in self.player.special_kennel:
+                scats.xp[0] += 1
+            if zombie.boss:
+                self.player.xp[0] = self.player.xp[1]
+            return False
+        else:
+            return True
     
     def _findZombie(self):
         
-        zombie = enemy.Zombie(self.player.level, self.difficulty)
+        if self.player.level % 7 == 0 and self.player.level in self.player.boss_fights:
+            zombie = enemy.Boss(self.player.level, self.difficulty)
+        else:
+            zombie = enemy.Zombie(self.player.level, self.difficulty)
         print("Aaannd now you're being attacked by a %s" % zombie.name)
         in_combat = True
         while in_combat:
@@ -185,17 +254,7 @@ class Game(object):
             time.sleep(1)
             self.specialCatStuff(zombie, True)
             
-            if self.player.health <= 0:
-                in_combat = False
-                self.gameOver()
-            if zombie.health <= 0:
-                print(END_COMBAT % zombie.name)
-                in_combat = False
-                self.player.xp[0] += 1
-                for cat in self.player.kennel:
-                    cat.xp[0] += 1
-                for scats in self.player.special_kennel:
-                    scats.xp[0] += 1
+            in_combat = self.endCombatCheck(zombie)
             
         dead_kittens = []
         for i in range(defending_kittens):

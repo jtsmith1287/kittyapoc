@@ -40,6 +40,7 @@ class Player(object):
         self._weapon = None
         self.level = 1
         self.xp = [0, 1]
+        self.boss_fights = [i*7 for i in range(20)]
         
     def __len__(self):
         
