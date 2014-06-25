@@ -8,7 +8,7 @@ import random
 
 NAMES = ["nomming", "gurgling", "drooling", "bloody", "filthy", "crawling",
          "aggressive", "frightening", "terrifying", "hungry", "famished",
-         "leg-less", "arm-less", "one-armed", "moaning", "grotesque,", "nasty",
+         "leg-less", "arm-less", "one-armed", "moaning", "grotesque", "nasty",
          "gross", "one-eyed", "bad-breath", "growling", "rotting", "skinless",
          "putrid", "obnoxiously obese", "faceless", "decaying", "stinky", "smelly",
          "fragrant", "frenzied", "pocket protector", "awkward", "buff",
@@ -25,10 +25,10 @@ class Zombie(object):
         self.difficulty = difficulty
         self.debuffs = set([])
         self.burning_damage = 0
-        self.health = int(round((0.95*self.level**1.9)* difficulty))
+        self.health = int(round((0.7*self.level**2.0)* difficulty))
         self.m_health = self.health
-        self._damage = (int(round(0.7 * level * difficulty)),
-                        int(round(1.0 * level * difficulty)))
+        self._damage = (int(round(0.65 * level * difficulty)),
+                        int(round(0.93 * level * difficulty)))
         
     def getDamage(self, player, is_random=True):
         """Returns total damage and mitigation value"""
