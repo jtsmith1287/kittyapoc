@@ -161,7 +161,7 @@ class Game(object):
         
         print("You found a wee kitty! Awwww.")
         chance = random.random()
-        if len(self.player.special_kennel) == len(special.SPECIAL_CATS):
+        if len(special.SPECIAL_CATS) == 0:
             chance = 1
         if chance > 0.16:
             name = names.generateName()
@@ -405,7 +405,7 @@ class Game(object):
 
     def die(self):
 
-        sure = raw_input("Are you sure you want to end it now?\n:")
+        sure = input("Are you sure you want to end it now?\n:")
         if sure and "y" in sure:
           self.running = False
           self.gameOver()
