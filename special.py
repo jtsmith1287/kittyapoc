@@ -91,6 +91,9 @@ def fireCatSpecial(self, player=None, zombie=None):
     
     if "burning" not in zombie.debuffs:
         print(self.name, random.choice(FIRECAT_AWESOMENESS) % zombie.name)
+        burst = int(self.level * 1.7)
+        zombie.updateHealth(-burst)
+        print("\tThe burst of flames deals %s damage" % burst)
         zombie.debuffs.add("burning")
         zombie.name = "flaming " + zombie.name
         zombie.burning_damage = self.level
