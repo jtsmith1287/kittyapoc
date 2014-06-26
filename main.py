@@ -104,7 +104,7 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 87
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 88
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.22
         self.find_item_chance = 0.08
@@ -161,7 +161,7 @@ class Game(object):
         
         print("You found a wee kitty! Awwww.")
         chance = random.random()
-        if len(self.player.special_kennel) == 4:
+        if len(self.player.special_kennel) == len(special.SPECIAL_CATS):
             chance = 1
         if chance > 0.16:
             name = names.generateName()
