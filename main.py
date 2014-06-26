@@ -104,10 +104,10 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 85
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 86
         self.difficulty = [1, 1.25, 1.5]
-        self.find_kitten_chance = 0.28
-        self.find_item_chance = 0.13
+        self.find_kitten_chance = 0.22
+        self.find_item_chance = 0.08
         self.find_food_chance = 0.9
         self.kitten_death_chance = 0.3
         
