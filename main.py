@@ -115,7 +115,8 @@ class Game(object):
                               "2) Check yourself out in a mirror?": self._showPlayerStats,
                               "3) Use an item?": self._useItem,
                               "4) Poke your cats?": self._pokeCats,
-                              "5) How am I doing?": self.detailed_info}
+                              "5) How am I doing?": self.detailed_info,
+                              "6) Suicide!": self.die,}
         
         self.player = player.Player()
         self.player.equip(generateNextWeapon())
@@ -401,7 +402,14 @@ class Game(object):
                 print(INVALID)
         else:
             print(INVALID)
-    
+
+    def die(self):
+
+        sure = raw_input("Are you sure you want to end it now?\n:")
+        if sure and "y" in sure:
+          self.running = False
+          self.gameOver()
+
     def run(self):
         
         print(self.version)
