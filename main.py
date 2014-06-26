@@ -203,7 +203,7 @@ class Game(object):
                 return True
             self.WinCheck(zombie)
             print(END_COMBAT % zombie.name)
-            self.player.xp[0] = + 1
+            self.player.xp[0] += 1
             self.player.health = self.player._courage * 2
             for cat in self.player.kennel:
                 cat.xp[0] += 1
