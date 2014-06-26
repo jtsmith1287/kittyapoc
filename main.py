@@ -203,13 +203,13 @@ class Game(object):
                 return True
             print(END_COMBAT % zombie.name)
             self.player.xp[0] += 1
-            self.player.setMaxHealth()
             for cat in self.player.kennel:
                 cat.xp[0] += 1
             for scats in self.player.special_kennel:
                 scats.xp[0] += 1
             if zombie.boss:
                 self.WinCheck()
+                self.player.setMaxHealth()
                 self.player.xp[0] = int(self.player.xp[1]/2)
                 for i in range(int(zombie.rounds/2)):
                   self.acquireItem()
