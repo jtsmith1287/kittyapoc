@@ -104,7 +104,7 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 86
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 87
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.22
         self.find_item_chance = 0.08
@@ -212,7 +212,7 @@ class Game(object):
                 self.WinCheck()
                 self.player.setMaxHealth()
                 self.player.xp[0] = int(self.player.xp[1]/2)
-                for i in range(int(zombie.rounds/2)):
+                for i in range(int(self.player.level/5) + 1):
                   self.acquireItem()
             return False
         else:
