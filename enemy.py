@@ -69,7 +69,7 @@ class Boss(Zombie):
     
     def __init__(self, level, difficulty):
         super().__init__(level, difficulty)
-        self.rounds = level / 7 + 1
+        self.rounds = int(level / 5 + 1)
         self.boss = True
 
     def specialMove(self, player):
@@ -93,7 +93,7 @@ class Boss(Zombie):
                         if player.attacking_kittens < 0:
                             player.attacking_kittens = 0
                             player.defending_kittens -= 1
-                    elif less_defending and player.defending_kittens != 0:
+                    elif not less_attacking and player.defending_kittens != 0:
                         player.defending_kittens -= 1
                         if player.defending_kittens < 0:
                             player.defending_kittens = 0

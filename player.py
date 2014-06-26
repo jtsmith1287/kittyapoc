@@ -40,7 +40,7 @@ class Player(object):
         self._weapon = None
         self.level = 1
         self.xp = [0, 1]
-        self.boss_fights = [i*5 for i in range(20)]
+        self.boss_fights = [i*5 + 5 for i in range(20)]
         
     def __len__(self):
         
@@ -60,10 +60,14 @@ class Player(object):
         self._courage += mod
         return self._courage
     
+    def setMaxHealth(self, mod=0):
+
+        self.health = self._courage * 2 + self.level + mod
+    
     def updateHealth(self, mod=0):
         
-        if self.health + mod >= self._courage * 2:
-            self.health = self._courage * 2
+        if self.health + mod >= (self._courage * 2) + self.level:
+            self.setMaxHealth()
         else:
             self.health += mod
         return self.health
@@ -132,10 +136,10 @@ class Player(object):
     
     def healthBar(self):
         
-        bar = "#"* int(((float(self.health) / (self._courage*2)) * 100)/5)
-        space = "-"* (20 - int(((float(self.health) / (self._courage*2) * 100)/5)))
+        bar = "#"* int(((float(self.health) / (self._courage*2 + self.level)) * 100)/5)
+        space = "-"* (20 - int(((float(self.health) / (self._courage*2 + self.level) * 100)/5)))
         
-        return "You: %s [%s%s] %s" % (self.health, bar, space, self._courage * 2)
+        return "You: %s [%s%s] %s" % (self.health, bar, space, self._courage * 2 + self.level)
     
     def newStats(self):
         
@@ -153,7 +157,7 @@ class Player(object):
             else:
                 print("Sorry, what now?")
         
-        self.health = self._courage * 2
+        self.setMaxHealth(1)
     
     def startLevelUp(self, rewards=None):
         
