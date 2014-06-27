@@ -104,7 +104,7 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 88
+        self.version = "Crazy Cat Lady Apocalypse v%s" % 89
         self.difficulty = [1, 1.25, 1.5]
         self.find_kitten_chance = 0.22
         self.find_item_chance = 0.08
@@ -276,7 +276,7 @@ class Game(object):
             print("    Oh no... oh I'm so sorry. There's been an accident.")
             for cat in dead_kittens:
                 time.sleep(1)
-                print("    " + cat + " was killed.")
+                print("    " + cat + " was killed.\n")
                 self.player.defending_kittens -= len(dead_kittens)
 
     def killAKitten(self):
@@ -432,3 +432,4 @@ class Game(object):
 
 if __name__ == "__main__":
     Game().run()
+    input("Press ENTER to quit")

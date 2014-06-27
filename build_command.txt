@@ -1,0 +1,1 @@
+C:\Python34\Scripts\cxfreeze.py main.py --target-dir "Crazy Cat Lady Apocalypse" --target-name "Crazy Cat Lady Apocalypse.exe"
