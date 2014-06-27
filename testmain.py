@@ -25,11 +25,11 @@ class TestGame(unittest.TestCase):
     
     @mock.patch("random.random")
     @mock.patch("player.Player.adoptKitten")
-    def test_FindKitten(self, mAdoptKitten, mRandom):
+    def testfindKitten(self, mAdoptKitten, mRandom):
         
         game = main.Game()
         mRandom.return_value = 0.01
-        game._findKitten()
+        game.findKitten()
         self.assert_(mAdoptKitten.called)
     
     @mock.patch("random.random")
@@ -41,7 +41,7 @@ class TestGame(unittest.TestCase):
         game = main.Game()
         game.player.level = 7
         for i in range(10):
-            game._findKitten()
+            game.findKitten()
         game.player._courage = 1000
         game.player._insanity = 1000
         game.player.health = 1000 * 2

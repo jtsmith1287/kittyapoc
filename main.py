@@ -111,17 +111,17 @@ class Game(object):
         self.find_food_chance = 0.9
         self.kitten_death_chance = 0.3
         
-        self._turn_choices = {"1) Venture further into the darkness?": self._venture,
-                              "2) Check yourself out in a mirror?": self._showPlayerStats,
-                              "3) Use an item?": self._useItem,
-                              "4) Poke your cats?": self._pokeCats,
+        self._turn_choices = {"1) Venture further into the darkness?": self.venture,
+                              "2) Check yourself out in a mirror?": self.showPlayerStats,
+                              "3) Use an item?": self.useItem,
+                              "4) Poke your cats?": self.pokeCats,
                               "5) How am I doing?": self.detailed_info,
                               "6) Suicide!": self.die,}
         
         self.player = player.Player()
         self.player.equip(generateNextWeapon())
     
-    def _setDifficulty(self):
+    def setDifficulty(self):
         
         print("Choose a difficulty")
         while type(self.difficulty) == type([]):
@@ -157,7 +157,7 @@ class Game(object):
             else:
                 print("You thought you saw something interesting... you must be going crazy.")
     
-    def _findKitten(self):
+    def findKitten(self):
         
         print("You found a wee kitty! Awwww.")
         chance = random.random()
@@ -196,7 +196,7 @@ class Game(object):
         if zombie.health <= 0:
             if zombie.boss and zombie.rounds > 1:
                 if self.player.inventory:
-                    self._useItem()
+                    self.useItem()
                 print(FREAKY_BOSS_TEXT)
                 zombie.health = zombie.m_health
                 zombie.rounds -= 1
@@ -213,12 +213,12 @@ class Game(object):
                 self.player.setMaxHealth()
                 self.player.xp[0] = int(self.player.xp[1]/2)
                 for i in range(int(self.player.level/5) + 1):
-                  self.acquireItem()
+                    self.acquireItem()
             return False
         else:
             return True
     
-    def _findZombie(self):
+    def findZombie(self):
         
         if self.player.level % 5 == 0 and self.player.level in self.player.boss_fights:
             zombie = enemy.Boss(self.player.level, self.difficulty)
@@ -227,14 +227,16 @@ class Game(object):
             zombie = enemy.Zombie(self.player.level, self.difficulty)
         print("Aaannd now you're being attacked by a %s" % zombie.name)
         in_combat = True
+        cats_vulnerable = 0
         while in_combat:
-            
             time.sleep(1.5)
             self.specialCatStuff(zombie, False)
             time.sleep(1.5)
-            
+
             dmg_dealt, attacking_kittens = self.player.getDamage()
             dmg_recv, defending_kittens = zombie.getDamage(self.player)
+            if defending_kittens > cats_vulnerable:
+                cats_vulnerable += defending_kittens - cats_vulnerable
             print(COMBAT_ATTACK % (self.player._weapon, attacking_kittens,
                                    zombie.name, dmg_dealt))
             
@@ -254,18 +256,20 @@ class Game(object):
             for letter in self.player.healthBar() + " | " + zombie.healthBar() + "\n":
                 time.sleep(0.01)
                 print(letter, end="")
-            
             time.sleep(1)
             self.specialCatStuff(zombie, True)
-            
             in_combat = self.endCombatCheck(zombie)
-            
+            self.deadKittenCheck(cats_vulnerable)
+        self.player.startLevelUp(rewards=[self.findKitten, self.acquireItem])
+
+    def deadKittenCheck(self, cats_vulnerable):
+        
         dead_kittens = []
-        for i in range(defending_kittens):
+        for i in range(cats_vulnerable):
             poor_luck = random.random()
             chance = self.kitten_death_chance - self.player.getKittenCourageBonus()
             if poor_luck < chance:
-                dead_kittens.append(self._killAKitten())
+                dead_kittens.append(self.killAKitten())
         
         if dead_kittens:
             time.sleep(1)
@@ -274,10 +278,8 @@ class Game(object):
                 time.sleep(1)
                 print("    " + cat + " was killed.")
                 self.player.defending_kittens -= len(dead_kittens)
-    
-        self.player.startLevelUp(rewards=[self._findKitten, self.acquireItem])
 
-    def _killAKitten(self):
+    def killAKitten(self):
         
         dead_cat = self.player.kennel.pop(
                 random.randint(0, len(self.player.kennel)-1))
@@ -298,7 +300,7 @@ class Game(object):
         
         sys.exit()
     
-    def _venture(self):
+    def venture(self):
         
         print("You move further into the darkness...")
         time.sleep(2)
@@ -307,9 +309,9 @@ class Game(object):
         if chance < self.find_item_chance + self.player.insanityChanceBonus()/2:
             self.acquireItem()
         elif chance < self.find_kitten_chance + self.player.insanityChanceBonus():
-            self._findKitten()
+            self.findKitten()
         else:
-            self._findZombie()
+            self.findZombie()
         
     def assignKittens(self, response):
         
@@ -323,7 +325,7 @@ class Game(object):
                 self.player.defending_kittens,
                 len(self.player) - int(response[0]) - int(response[1])))
     
-    def _pokeCats(self):    
+    def pokeCats(self):    
         
         if self.player.kittenCount() or len(self.player.special_kennel):
             for cat in self.player.kennel:
@@ -346,7 +348,7 @@ class Game(object):
         else:
             print("You've rescued no kittens...")
             
-    def _showPlayerStats(self):
+    def showPlayerStats(self):
         
         items = "\n".join(["%s x%s" % (k,v) for k,v in self.player.checkInventory().items()])
         print(SHOW_STATS_STRING % (self.player.health,
@@ -372,7 +374,7 @@ class Game(object):
                                     self.player.getKittenCourageBonus() * 100,
                                     ))
     
-    def _useItem(self):
+    def useItem(self):
         
         items = sorted(self.player.checkInventory().items())
         if items:
@@ -414,8 +416,8 @@ class Game(object):
         
         print(self.version)
         self.player.intro()
-        self._setDifficulty()
-        self._findKitten()
+        self.setDifficulty()
+        self.findKitten()
         while self.running:
             print()
             self.beginningOfTurnPrompt()
