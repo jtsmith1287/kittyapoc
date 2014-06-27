@@ -74,30 +74,33 @@ class Boss(Zombie):
 
     def specialMove(self, player):
         
-        total_cats = max_chance = len(player.kennel)
+        total_cats = max_chance = player.attacking_kittens + player.defending_kittens
         if total_cats:
             max_chance = int(total_cats/self.rounds)
             if max_chance > total_cats:
                 max_chance = len(player.kennel)
                 
             dead_cats_list = random.sample(player.kennel, 
-                    random.randint(1 if max_chance else 0, max_chance))
+                    random.randint(0, max_chance))
             dead_cat_names = [cat.name for cat in dead_cats_list]
-            for cat in player.kennel:
-                if cat.name in dead_cat_names:
-                    player.kennel.remove(cat)
-                    print(self.name, "just ate", cat.name)
-                    less_attacking = random.randint(0, 1)
-                    if less_attacking and player.attacking_kittens != 0:
-                        player.attacking_kittens -= 1
-                        if player.attacking_kittens < 0:
-                            player.attacking_kittens = 0
-                            player.defending_kittens -= 1
-                    elif not less_attacking and player.defending_kittens != 0:
-                        player.defending_kittens -= 1
-                        if player.defending_kittens < 0:
-                            player.defending_kittens = 0
+            if dead_cats_list:
+                for cat in player.kennel:
+                    if cat.name in dead_cat_names:
+                        player.kennel.remove(cat)
+                        print(self.name, "just ate", cat.name)
+                        less_attacking = random.randint(0, 1)
+                        if less_attacking and player.attacking_kittens != 0:
                             player.attacking_kittens -= 1
+                            if player.attacking_kittens < 0:
+                                player.attacking_kittens = 0
+                                player.defending_kittens -= 1
+                        elif not less_attacking and player.defending_kittens != 0:
+                            player.defending_kittens -= 1
+                            if player.defending_kittens < 0:
+                                player.defending_kittens = 0
+                                player.attacking_kittens -= 1
+            else:
+                print("\nThe %s lunges after you cats, but they scatter. None are eaten\n")
         else:
             print("\n\tIt's just you and this guy...\n")
                 

@@ -12,7 +12,8 @@ from item import getRandomFood, generateNextWeapon
 import time
 import random
 import sys
-import platform
+import logging
+import file_manager
 
 
 SHOW_STATS_STRING = """
@@ -71,15 +72,11 @@ Ok, so that's %s attacking, and %s defending. You've got %s kittens left.
 
 FREAKY_BOSS_TEXT = """
 The zombie falls to the ground. 
-
 You think it's over... 
-
 You hear gurgling and moaning behind you...
-
 The zombie rises to its feet ...
-
-This fight isn't over.
-"""
+This fight isn't finished.
+""".splitlines()
 
 GAME_WIN = """
 HOLY HELL... You just beat the end of the world...
@@ -104,8 +101,9 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "Crazy Cat Lady Apocalypse v%s" % 89
+        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 92
         self.difficulty = [1, 1.25, 1.5]
+        self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
         self.find_kitten_chance = 0.22
         self.find_item_chance = 0.08
         self.find_food_chance = 0.9
@@ -125,11 +123,11 @@ class Game(object):
         
         print("Choose a difficulty")
         while type(self.difficulty) == type([]):
-            dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
-            dif = input("\n".join([d for d in dif_list]))
-            if dif.isdigit() and int(dif) -1 in range(len(dif_list)):
+            self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
+            dif = input("\n".join([d for d in self.dif_list]))
+            if dif.isdigit() and int(dif) -1 in range(len(self.dif_list)):
                 self.difficulty = self.difficulty[int(dif)-1]
-                print("\nDifficulty set to %s" % (dif_list[int(dif)-1].split()[-1]))
+                print("\nDifficulty set to %s" % (self.dif_list[int(dif)-1].split()[-1]))
             else:
                 print(INVALID)
             
@@ -197,7 +195,9 @@ class Game(object):
             if zombie.boss and zombie.rounds > 1:
                 if self.player.inventory:
                     self.useItem()
-                print(FREAKY_BOSS_TEXT)
+                for line in FREAKY_BOSS_TEXT:
+                    print(line)
+                    time.sleep(1)
                 zombie.health = zombie.m_health
                 zombie.rounds -= 1
                 zombie.specialMove(self.player)
@@ -284,21 +284,6 @@ class Game(object):
         dead_cat = self.player.kennel.pop(
                 random.randint(0, len(self.player.kennel)-1))
         return dead_cat.name
-    
-    def gameOver(self):
-        
-        print(GAME_OVER)
-        level = self.player.level * 10
-        kats = len(self.player) * 2
-        items = len(self.player.inventory) * 3
-        exp = self.player.xp[0]
-        
-        score = level + kats + items + exp
-        
-        print("You scored: " + str(score))
-        print (self.version)
-        
-        sys.exit()
     
     def venture(self):
         
@@ -411,16 +396,52 @@ class Game(object):
 
         sure = input("Are you sure you want to end it now?\n:")
         if sure and "y" in sure:
-          self.running = False
-          self.gameOver()
+            self.running = False
+            self.gameOver()
 
-    def run(self):
+    def gameOver(self):
         
-        print(self.version)
+        print(GAME_OVER)
+        level = self.player.level * 10
+        kats = len(self.player) * 2
+        items = len(self.player.inventory) * 3
+        exp = self.player.xp[0]
+        
+        score = level + kats + items + exp
+        
+        print("You scored: " + str(score))
+        print (self.version)
+        
+        try:
+            sys.exit()
+        except:
+            pass
+
+    def startNewGame(self):
+        
+        file_manager.saveGame(self.player)
+        print("Starting a new game...\n\n")
         self.player.intro()
         self.setDifficulty()
+        self.player.difficulty = self.difficulty
         self.findKitten()
+
+    def run(self):
+
+        print(self.version)
+        print("Press Ctrl + C to quit.")
+        try:
+            self.player = file_manager.loadGame()
+            self.difficulty = self.player.difficulty
+            
+        except FileNotFoundError:
+            self.startNewGame()
+        except AttributeError:
+            print("Your game save is incompatible with this new version.",
+                  "I realize this sucks, but life goes on... or does it?")
+            self.startNewGame()
         while self.running:
+            file_manager.saveGame(self.player)
             print()
             self.beginningOfTurnPrompt()
             choice = input("\n:")
@@ -433,5 +454,14 @@ class Game(object):
     
 
 if __name__ == "__main__":
-    Game().run()
-    input("Press ENTER to quit")
+    game = Game()
+    try:
+        game.run()
+    except KeyboardInterrupt:
+        file_manager.saveGame(game.player)
+        print("\n\tBye!\n\n")
+    except:
+        logging.exception("Something happened ...")
+        input("\nPress ENTER to quit")
+
+        

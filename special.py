@@ -129,7 +129,7 @@ SPECIAL_CATS = [
                                     spasticCatSpecial,
                                     ninjaCatSpecial,
                                     mediCatSpecial],
-                 "activation_chance": 0.1,
+                 "activation_chance": 0.3,
                  "post": True},
                 ]
 

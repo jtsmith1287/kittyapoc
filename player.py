@@ -29,6 +29,8 @@ class Player(object):
     
     def __init__(self):
 
+        self.difficulty = None
+
         self._insanity = 10
         self._courage = 10
         self.health = self._courage * 2
@@ -40,7 +42,7 @@ class Player(object):
         self._weapon = None
         self.level = 1
         self.xp = [0, 1]
-        self.boss_fights = [i*5 + 5 for i in range(20)]
+        self.boss_fights = [i*5 + 5 for i in range(10)]
         
     def __len__(self):
         
