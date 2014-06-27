@@ -1,3 +1,3 @@
 @echo off
-build\main.exe
+main.py
 pause

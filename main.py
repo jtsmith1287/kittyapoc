@@ -259,7 +259,7 @@ class Game(object):
             time.sleep(1)
             self.specialCatStuff(zombie, True)
             in_combat = self.endCombatCheck(zombie)
-            self.deadKittenCheck(cats_vulnerable)
+        self.deadKittenCheck(cats_vulnerable)
         self.player.startLevelUp(rewards=[self.findKitten, self.acquireItem])
 
     def deadKittenCheck(self, cats_vulnerable):
@@ -305,6 +305,8 @@ class Game(object):
         print("You move further into the darkness...")
         time.sleep(2)
         chance = random.random()
+        print("%% roll = %s" % int(chance * 100))
+        time.sleep(.75)
         # Check if an item, kitten, or enemy was found
         if chance < self.find_item_chance + self.player.insanityChanceBonus()/2:
             self.acquireItem()
@@ -383,7 +385,7 @@ class Game(object):
             print("You haven't collected anything yet.")
             return None, None # Don't even know...
         for x,k in enumerate(items):
-            print(str(int(x)+1) + ")", k[0], "x" + str(k[1]))
+            print("    ", str(int(x)+1) + ")", k[0], "x" + str(k[1]))
         choice = input(":")
         if choice and choice.isdigit() and int(choice) <= len(items):
             # This just seems bad... this could be better.
