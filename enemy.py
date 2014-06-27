@@ -27,10 +27,11 @@ class Zombie(object):
         self.boss = False
         self.rounds = 1
         self.burning_damage = 0
-        self.health = int(round((0.7*self.level**2.0)* difficulty))
+        self.health = int(round((0.8*self.level**2.0)* difficulty))
         self.m_health = self.health
-        self._damage = (int(round(0.65 * level * difficulty)),
-                        int(round(0.93 * level * difficulty)))
+        self._damage = (int(round((0.35 * level**1.55) * difficulty)),
+                        int(round((0.5 * level**1.55) * difficulty)))
+        print(self._damage)
         
     def getDamage(self, player, is_random=True):
         """Returns total damage and mitigation value"""
@@ -100,7 +101,8 @@ class Boss(Zombie):
                                 player.defending_kittens = 0
                                 player.attacking_kittens -= 1
             else:
-                print("\nThe %s lunges after you cats, but they scatter. None are eaten\n")
+                print("\nThe %s lunges after you cats, but they scatter. None are eaten\n" %(
+                        self.name))
         else:
             print("\n\tIt's just you and this guy...\n")
                 

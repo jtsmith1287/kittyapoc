@@ -127,7 +127,7 @@ class Player(object):
     
     def getKittenCourageBonus(self):
         
-        return self._courage * 0.01
+        return self._courage * 0.0075
 
     def experienceBar(self):
 

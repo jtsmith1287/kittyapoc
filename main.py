@@ -101,7 +101,7 @@ class Game(object):
     def __init__(self):
         
         self.running = True
-        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 92
+        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 94
         self.difficulty = [1, 1.25, 1.5]
         self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
         self.find_kitten_chance = 0.22
@@ -223,6 +223,7 @@ class Game(object):
         if self.player.level % 5 == 0 and self.player.level in self.player.boss_fights:
             zombie = enemy.Boss(self.player.level, self.difficulty)
             print("\nThere's something peculiar about this one...\n")
+            time.sleep(1.5)
         else:
             zombie = enemy.Zombie(self.player.level, self.difficulty)
         print("Aaannd now you're being attacked by a %s" % zombie.name)
@@ -349,16 +350,14 @@ class Game(object):
     
     def detailed_info(self):
         
-        kitten_chance = int((self.find_kitten_chance + \
-                self.player.insanityChanceBonus() - \
-                self.find_item_chance) * 100)
-        item_chance = int((self.find_item_chance + self.player.insanityChanceBonus()/2) * 100)
+        item_chance = int(self.find_item_chance + self.player.insanityChanceBonus()/2)
+        kitten_chance = int(self.find_kitten_chance + self.player.insanityChanceBonus() - item_chance)
         print(DETAILED_INFO_TEXT % (self.player.updateInsanity(),
-                                    kitten_chance,
-                                    item_chance,
+                                    kitten_chance * 100,
+                                    item_chance * 100,
                                     self.player.getBonusDamageFromInsanity(),
                                     self.player.updateCourage(),
-                                    self.player.getKittenCourageBonus() * 100,
+                                    (self.kitten_death_chance - self.player.getKittenCourageBonus()) * 100,
                                     ))
     
     def useItem(self):
@@ -454,13 +453,18 @@ class Game(object):
     
 
 if __name__ == "__main__":
-    game = Game()
+    if (sys.version_info) < (3, 4):
+        print("Incorrect version. Python 3.4 or later needed.")
+    else:
+        game = Game()
     try:
         game.run()
     except KeyboardInterrupt:
         file_manager.saveGame(game.player)
+        print(game.version)
         print("\n\tBye!\n\n")
     except:
+        print(game.version)
         logging.exception("Something happened ...")
         input("\nPress ENTER to quit")
 
