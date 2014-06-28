@@ -8,10 +8,12 @@ import shutil
 import subprocess
 import time
 
-
-SAVE_DIR = os.environ["LOCALAPPDATA"] + "\\CCLA"
-SAVE_FILE = SAVE_DIR + "\\ccla.save"
-SAVE_BACKUP = SAVE_DIR + "\\ccla.backup"
+if os.name == "posix":
+   SAVE_DIR = os.path.join(os.environ["HOME"], "Documents", )
+else:
+   SAVE_DIR = os.environ["LOCALAPPDATA"] + "\\CCLA"
+SAVE_FILE = os.path.join(SAVE_DIR, "ccla.save")
+SAVE_BACKUP = os.path.join(SAVE_DIR, "ccla.backup")
 
 FIRST_TIME = """
 This is your first time running Crazy Cat Lady Apocalypse.
