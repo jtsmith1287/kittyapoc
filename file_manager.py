@@ -4,11 +4,14 @@ Handles saving and loading of game states.
 
 import pickle
 import os
+import shutil
 import subprocess
 import time
 
 
 SAVE_DIR = os.environ["LOCALAPPDATA"] + "\\CCLA"
+SAVE_FILE = SAVE_DIR + "\\ccla.save"
+SAVE_BACKUP = SAVE_DIR + "\\ccla.backup"
 
 FIRST_TIME = """
 This is your first time running Crazy Cat Lady Apocalypse.
@@ -28,19 +31,46 @@ def saveGame(player):
         time.sleep(1)
         print("And here comes your new save file. Keep this safe. Your cats lives depend on it.")
         time.sleep(5)
-    with open(SAVE_DIR + "\\ccla.save", "wb") as f:
+    if os.access(SAVE_FILE, os.F_OK):
+        shutil.move(SAVE_FILE, SAVE_BACKUP)
+    with open(SAVE_FILE, "wb") as f:
         pickle.dump(player, f)
         print("(Game Saved)")
 
 def loadGame():
     
-    with open(SAVE_DIR + "\\ccla.save", "rb") as f:
-        data = pickle.load(f)
-        return data
+    try:
+        print("Locating save file...")
+        with open(SAVE_FILE, "rb") as f:
+            data = pickle.load(f)
+            print("Save file loaded!")
+            return data
+    except EOFError:
+        print("Locating backup file...")
+        try:
+            with open(SAVE_BACKUP, "rb") as f:
+                data = pickle.load(f)
+                print("!!! Save file was corrupted. It's ok though. We made a backup. :D")
+                return data
+        except EOFError:
+            print("\n!!!Your save and backup file became corrupted. Who knows...",
+                  "Sorry 'bout that...")
+            raise(FileNotFoundError)
+    except FileNotFoundError:
+        return
 
 def deleteSave():
     
-    os.remove(SAVE_DIR + "\\ccla.save")
+    try:
+        os.remove(SAVE_DIR + "\\ccla.save")
+        print("Deleted save")
+    except FileNotFoundError:
+        pass
+    try:
+        os.remove(SAVE_DIR + "\\ccla.backup")
+        print("Deleted backup")
+    except FileNotFoundError:
+        pass
 
 
 if __name__ == "__main__":

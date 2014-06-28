@@ -29,8 +29,8 @@ class Zombie(object):
         self.burning_damage = 0
         self.health = int(round((0.8*self.level**2.0)* difficulty))
         self.m_health = self.health
-        self._damage = (int(round((0.35 * level**1.55) * difficulty)),
-                        int(round((0.5 * level**1.55) * difficulty)))
+        self._damage = (int(round((0.3 * level**1.55) * difficulty)),
+                        int(round((0.47 * level**1.55) * difficulty)))
         
     def getDamage(self, player, is_random=True):
         """Returns total damage and mitigation value"""

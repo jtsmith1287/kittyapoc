@@ -103,8 +103,8 @@ class Game(object):
     def __init__(self):
         
         self.running = False
-        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 95
-        self.difficulty = [1, 1.25, 1.5]
+        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 100
+        self.difficulty = 1.05
         self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
         self.find_kitten_chance = 0.22
         self.find_item_chance = 0.08
@@ -117,9 +117,6 @@ class Game(object):
                               "4) Poke your cats?": self.pokeCats,
                               "5) How am I doing?": self.detailed_info,
                               "6) Suicide!": self.die,}
-        
-        self.player = player.Player()
-        self.player.equip(generateNextWeapon())
     
     def setDifficulty(self):
         
@@ -170,9 +167,14 @@ class Game(object):
             new_kitten = kitten.Kitten(name)
             self.player.adoptKitten(new_kitten)
         else:
-            new_kitten = special.spawnSpecialKitty()
-            print("But this is no ordinary kitten!!! It's %s!" % new_kitten.name)
-            self.player.adoptKitten(new_kitten, True)
+            new_kittens = special.spawnSpecialKitty()
+            owned_kittens = [i.name for i in self.player.special_kennel]
+            for _kitten in new_kittens:
+                if _kitten.name not in owned_kittens:
+                    print("But this is no ordinary kitten!!! It's %s!" % _kitten.name)
+                    self.player.adoptKitten(_kitten, True)
+                    return
+            self.findKitten()
     
     def specialCatStuff(self, zombie, post=False):
     
@@ -359,11 +361,11 @@ class Game(object):
     
     def detailed_info(self):
         
-        item_chance = int(self.find_item_chance + self.player.insanityChanceBonus()/2)
-        kitten_chance = int(self.find_kitten_chance + self.player.insanityChanceBonus() - item_chance)
+        item_chance = self.find_item_chance + self.player.insanityChanceBonus()/2
+        kitten_chance = self.find_kitten_chance + self.player.insanityChanceBonus() - item_chance
         print(DETAILED_INFO_TEXT % (self.player.updateInsanity(),
-                                    kitten_chance * 100,
-                                    item_chance * 100,
+                                    round(kitten_chance * 100, 2),
+                                    round(item_chance * 100, 2),
                                     self.player.getBonusDamageFromInsanity(),
                                     self.player.updateCourage(),
                                     (self.kitten_death_chance - self.player.getKittenCourageBonus()) * 100,
@@ -409,16 +411,17 @@ class Game(object):
 
     def gameOver(self):
         
-        print(GAME_OVER)
-        level = self.player.level * 10
-        kats = len(self.player) * 2
-        items = len(self.player.inventory) * 3
-        exp = self.player.xp[0]
-        
-        score = level + kats + items + exp
-        
-        print("You scored: " + str(score))
-        print (self.version)
+        if self.player:
+            print(GAME_OVER)
+            level = self.player.level * 10
+            kats = len(self.player) * 2
+            items = len(self.player.inventory) * 3
+            exp = self.player.xp[0]
+            
+            score = level + kats + items + exp
+            
+            print("You scored: " + str(score))
+            print (self.version)
         
         self.running = False
         file_manager.deleteSave()
@@ -430,28 +433,37 @@ class Game(object):
     def startNewGame(self):
         
         print("Starting a new game...\n\n")
-        self.setDifficulty()
+        self.player = player.Player()
+        self.player.equip(generateNextWeapon())
+        #self.setDifficulty()
         self.player.intro()
-        self.player.difficulty = self.difficulty
+        #self.player.difficulty = self.difficulty
         self.findKitten()
         self.running = True
 
-    def run(self):
-
+    def tryLoadExistingSave(self):
+        
         print(self.version)
         print("Press Ctrl + C to quit.")
         try:
             self.player = file_manager.loadGame()
-            self.difficulty = self.player.difficulty
-            self.running = True
+            #self.difficulty = self.player.difficulty
+            if self.player:
+                self.running = True
+            else:
+                self.startNewGame()
         except FileNotFoundError:
             self.startNewGame()
         except AttributeError:
             print("Your game save is incompatible with this new version.",
                   "I realize this sucks, but life goes on... or does it?")
             self.startNewGame()
+
+    def run(self):
+
+        self.tryLoadExistingSave()
+        
         while self.running:
-            file_manager.saveGame(self.player)
             print()
             self.beginningOfTurnPrompt()
             choice = input("\n:")
@@ -461,23 +473,26 @@ class Game(object):
                 chosen_key = key_list[index]
                 method = self._turn_choices.get(chosen_key)
                 method()
+            if self.running:
+                file_manager.saveGame(self.player)
     
 
 if __name__ == "__main__":
     if (sys.version_info) < (3, 4):
         print("Incorrect version. Python 3.4 or later needed.")
     else:
-        game = Game()
-    try:
-        game.run()
-    except KeyboardInterrupt:
-        if game.running:
-            file_manager.saveGame(game.player)
-        print(game.version)
-        print("\n\tBye!\n\n")
-    except:
-        print(game.version)
-        logging.exception("Something happened ...")
-        input("\nPress ENTER to quit")
+        try:
+            game = Game()
+            game.run()
+        except KeyboardInterrupt:
+            if game.running:
+                file_manager.saveGame(game.player)
+            print(game.version)
+            print("\n\tBye!\n\n")
+        except:
+            print(game.version)
+            logging.exception("Something happened ...")
+            input("\nPress ENTER to quit")
+    input("Press ENTER to quit")
 
         

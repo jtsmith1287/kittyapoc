@@ -101,10 +101,13 @@ def fireCatSpecial(self, player=None, zombie=None):
 
 def spawnSpecialKitty():
     
-    index = random.randint(0, len(SPECIAL_CATS)-1)
+    """index = random.randint(0, len(SPECIAL_CATS)-1)
     cat_args = SPECIAL_CATS.pop(index)
     new_cat = SpecialCat(**cat_args)
-    return new_cat
+    return new_cat"""
+    random.shuffle(SPECIAL_CATS)
+    for lekitty in SPECIAL_CATS:
+        yield SpecialCat(**lekitty)
 
 
 SPECIAL_CATS = [
