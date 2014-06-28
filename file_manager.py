@@ -38,5 +38,10 @@ def loadGame():
         data = pickle.load(f)
         return data
 
+def deleteSave():
+    
+    os.remove(SAVE_DIR + "\\ccla.save")
+
+
 if __name__ == "__main__":
     saveGame("thing")

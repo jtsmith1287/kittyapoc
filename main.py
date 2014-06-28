@@ -18,12 +18,14 @@ import file_manager
 
 SHOW_STATS_STRING = """
 Your current health is %s
+%s
 You are level %s.
 %s
 Your courage is %s.
 Your insanity is %s.
 You are wielding a %s.
 You have %s kittens in your kennel.
+
 You possess the following items:
 %s
 """
@@ -100,8 +102,8 @@ class Game(object):
     
     def __init__(self):
         
-        self.running = True
-        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 94
+        self.running = False
+        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 95
         self.difficulty = [1, 1.25, 1.5]
         self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
         self.find_kitten_chance = 0.22
@@ -190,6 +192,7 @@ class Game(object):
         
         if self.player.health <= 0:
             self.gameOver()
+            self.running = False
             return False
         if zombie.health <= 0:
             if zombie.boss and zombie.rounds > 1:
@@ -218,9 +221,13 @@ class Game(object):
         else:
             return True
     
-    def findZombie(self):
+    def findZombie(self, roll):
         
-        if self.player.level % 5 == 0 and self.player.level in self.player.boss_fights:
+        if roll == 1.0: # Basically, player rolled a 100
+            print("Woah! Where'd this thing come from!?")
+            time.sleep(1)
+            zombie = enemy.Boss(self.player.level, self.difficulty)
+        elif self.player.level % 5 == 0 and self.player.level in self.player.boss_fights:
             zombie = enemy.Boss(self.player.level, self.difficulty)
             print("\nThere's something peculiar about this one...\n")
             time.sleep(1.5)
@@ -254,9 +261,10 @@ class Game(object):
             # Deal Damage
             self.player.updateHealth(-dmg_recv)
             zombie.updateHealth(-dmg_dealt)
-            for letter in self.player.healthBar() + " | " + zombie.healthBar() + "\n":
-                time.sleep(0.01)
-                print(letter, end="")
+            time.sleep(.5)
+            print(self.player.healthBar()) 
+            print(zombie.healthBar())
+
             time.sleep(1)
             self.specialCatStuff(zombie, True)
             in_combat = self.endCombatCheck(zombie)
@@ -299,7 +307,7 @@ class Game(object):
         elif chance < self.find_kitten_chance + self.player.insanityChanceBonus():
             self.findKitten()
         else:
-            self.findZombie()
+            self.findZombie(round(chance, 2))
         
     def assignKittens(self, response):
         
@@ -340,6 +348,7 @@ class Game(object):
         
         items = "\n".join(["%s x%s" % (k,v) for k,v in self.player.checkInventory().items()])
         print(SHOW_STATS_STRING % (self.player.health,
+                                   "".join(self.player.healthBar().split()[1:]),
                                    self.player.level,
                                    self.player.experienceBar(),
                                    self.player.updateCourage(), 
@@ -394,7 +403,7 @@ class Game(object):
     def die(self):
 
         sure = input("Are you sure you want to end it now?\n:")
-        if sure and "y" in sure:
+        if sure and "y" in sure.lower():
             self.running = False
             self.gameOver()
 
@@ -411,6 +420,8 @@ class Game(object):
         print("You scored: " + str(score))
         print (self.version)
         
+        self.running = False
+        file_manager.deleteSave()
         try:
             sys.exit()
         except:
@@ -418,12 +429,12 @@ class Game(object):
 
     def startNewGame(self):
         
-        file_manager.saveGame(self.player)
         print("Starting a new game...\n\n")
-        self.player.intro()
         self.setDifficulty()
+        self.player.intro()
         self.player.difficulty = self.difficulty
         self.findKitten()
+        self.running = True
 
     def run(self):
 
@@ -432,7 +443,7 @@ class Game(object):
         try:
             self.player = file_manager.loadGame()
             self.difficulty = self.player.difficulty
-            
+            self.running = True
         except FileNotFoundError:
             self.startNewGame()
         except AttributeError:
@@ -460,7 +471,8 @@ if __name__ == "__main__":
     try:
         game.run()
     except KeyboardInterrupt:
-        file_manager.saveGame(game.player)
+        if game.running:
+            file_manager.saveGame(game.player)
         print(game.version)
         print("\n\tBye!\n\n")
     except:

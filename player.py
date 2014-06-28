@@ -84,16 +84,22 @@ class Player(object):
     
     def getCatBonus(self, count, state):
         
+        allocated = self.__dict__["%s_kittens" % state]
+        
         stats = {"attacking": int(round(self._insanity/6))-1,
                 "defending": int(round(self._courage/6))-1}
-        if stats[state] > self.__dict__["%s_kittens" % state]:
-            stats[state] = self.__dict__["%s_kittens" % state]
+
         number_of_cats = random.randint(0, count if count >= 0 else 0)
-        cat_sample = random.sample(self.kennel, number_of_cats)
-        cat_bonus = sum([i.level for i in cat_sample])
-        if self.__dict__["%s_kittens" % state]:
-            cat_bonus += stats[state]
-        return cat_bonus, number_of_cats
+        if allocated:
+            if stats[state] + number_of_cats > allocated:
+                number_of_cats = allocated
+            else:
+                number_of_cats += stats[state]
+            cat_sample = random.sample(self.kennel, number_of_cats)
+            cat_bonus = sum([i.level for i in cat_sample])
+            return cat_bonus, number_of_cats
+        else:
+            return 0, 0
     
     def getDamage(self):
         """Returns total damage and number of attacking kittens"""
@@ -141,7 +147,10 @@ class Player(object):
         bar = "#"* int(((float(self.health) / (self._courage*2 + self.level)) * 100)/5)
         space = "-"* (20 - int(((float(self.health) / (self._courage*2 + self.level) * 100)/5)))
         
-        return "You: %s [%s%s] %s" % (self.health, bar, space, self._courage * 2 + self.level)
+        name = "You:"
+        full_bar = "%s [%s%s] %s" % (self.health, bar, space, self._courage * 2 + self.level)
+        
+        return name + full_bar.rjust(60-len(name))
     
     def newStats(self):
         

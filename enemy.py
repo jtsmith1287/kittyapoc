@@ -31,7 +31,6 @@ class Zombie(object):
         self.m_health = self.health
         self._damage = (int(round((0.35 * level**1.55) * difficulty)),
                         int(round((0.5 * level**1.55) * difficulty)))
-        print(self._damage)
         
     def getDamage(self, player, is_random=True):
         """Returns total damage and mitigation value"""
@@ -54,7 +53,9 @@ class Zombie(object):
         bar = "#"* int(((float(self.health) / self.m_health) * 100)/5)
         space = "-"* (20 - int(((float(self.health) / self.m_health) * 100)/5))
         
-        return "%s: %s [%s%s] %s" % (self.name, self.health, bar, space, self.m_health)
+        full_bar =  "%s [%s%s] %s" % (self.health, bar, space, self.m_health)
+        
+        return self.name + ":" + full_bar.rjust(59-len(self.name))
     
     def updateHealth(self, mod=0):
         
