@@ -7,6 +7,9 @@ import os
 import shutil
 import subprocess
 import time
+import logging
+import player
+import item
 
 if os.name == "posix":
    SAVE_DIR = os.path.join(os.environ["HOME"], "Documents", )
@@ -41,6 +44,8 @@ def saveGame(player):
 
 def loadGame():
     
+    if not os.access(SAVE_FILE, os.F_OK):
+        return None
     try:
         print("Locating save file...")
         with open(SAVE_FILE, "rb") as f:
@@ -48,6 +53,7 @@ def loadGame():
             print("Save file loaded!")
             return data
     except EOFError:
+        logging.exception("DEBUG")
         print("Locating backup file...")
         try:
             with open(SAVE_BACKUP, "rb") as f:
@@ -58,8 +64,7 @@ def loadGame():
             print("\n!!!Your save and backup file became corrupted. Who knows...",
                   "Sorry 'bout that...")
             raise(FileNotFoundError)
-    except FileNotFoundError:
-        return
+        
 
 def deleteSave():
     

@@ -39,9 +39,9 @@ class Player(object):
         self.attacking_kittens = 0
         self.defending_kittens = 0
         self.inventory = []
-        self._weapon = None
+        self.weapon = None
         self.level = 1
-        self.xp = [0, 1]
+        self.xp = [0, 2]
         self.boss_fights = [i*5 + 5 for i in range(10)]
         
     def __len__(self):
@@ -76,7 +76,7 @@ class Player(object):
     
     def equip(self, item):
         
-        self._weapon = item
+        self.weapon = item
     
     def getBonusDamageFromInsanity(self):
         
@@ -104,7 +104,7 @@ class Player(object):
     def getDamage(self):
         """Returns total damage and number of attacking kittens"""
         
-        weapon_dmg = self._weapon.getDamage()
+        weapon_dmg = self.weapon.getDamage()
         cat_bonus, att_cats = self.getCatBonus(self.attacking_kittens,
                                                "attacking")
         true_dmg = weapon_dmg + cat_bonus + self.getBonusDamageFromInsanity()
@@ -179,7 +179,7 @@ class Player(object):
             print(LEVEL_UP_TEXT % (random.choice(CRAZY_WORDS),
                                    random.choice(BRAVE_WORDS)))
             self.newStats()
-            self.xp = [0, int(round(self.xp[1] + (self.level/3)))]
+            self.xp = [0, self.level + 1]
             self.level += 1
         self.checkKittenLevels()
     

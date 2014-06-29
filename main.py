@@ -59,7 +59,7 @@ effective against zombies (+%s bonus dmg).
 Your courage (%s) is your fortitude. It's what's keeping you pushing forward
 and enables you to stand strong when you're toe to toe with the flesh eating
 undead. Without it you'd surely die. Only the brave are willing to risk their
-lives for their kittens (+%s%% kitten protection)
+lives for their kittens (%s%% kitten protection)
 """
 
 CAT_HERDING = """
@@ -103,7 +103,7 @@ class Game(object):
     def __init__(self):
         
         self.running = False
-        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 100
+        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 101
         self.difficulty = 1.05
         self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
         self.find_kitten_chance = 0.22
@@ -136,20 +136,20 @@ class Game(object):
         for k in sorted(self._turn_choices):
             print(k)
     
-    def acquireItem(self):
+    def acquireItem(self, forced_chance=None):
         
-        item_chance = random.random()
+        item_chance = random.random() if not forced_chance else forced_chance
         # determine whether a weapon or food was found
         if item_chance < self.find_food_chance:
             item = getRandomFood()
             self.player.inventory.append(item)
             print("You found a %s" % item.name)
         else:
-            item = generateNextWeapon()
+            item = generateNextWeapon(self.player.weapon)
             if item:
                 print("You found a %s" % item.name)
                 print("You toss your %s to the ground in favor of your new %s!" % (
-                        self.player._weapon, item))
+                        self.player.weapon, item))
                 self.player.equip(item)
             else:
                 print("You thought you saw something interesting... you must be going crazy.")
@@ -247,7 +247,7 @@ class Game(object):
             dmg_recv, defending_kittens = zombie.getDamage(self.player)
             if defending_kittens > cats_vulnerable:
                 cats_vulnerable += defending_kittens - cats_vulnerable
-            print(COMBAT_ATTACK % (self.player._weapon, attacking_kittens,
+            print(COMBAT_ATTACK % (self.player.weapon, attacking_kittens,
                                    zombie.name, dmg_dealt))
             
             if "burning" in zombie.debuffs:
@@ -301,8 +301,12 @@ class Game(object):
         print("You move further into the darkness...")
         time.sleep(2)
         chance = random.random()
-        print("%% roll = %s" % int(chance * 100))
+        percent = int(chance * 100)
+        print("%% roll = %s" % percent)
         time.sleep(.75)
+        if percent <= 1:
+            print("Hey hey! Today's you'r lucky day!")
+            self.acquireItem(1.0)
         # Check if an item, kitten, or enemy was found
         if chance < self.find_item_chance + self.player.insanityChanceBonus()/2:
             self.acquireItem()
@@ -329,6 +333,12 @@ class Game(object):
             for cat in self.player.kennel:
                 cat.displayInfo()
             print("You have %s kittens" % len(self.player))
+            print("Current configuration:",
+                  "    Attacking: %s" % self.player.attacking_kittens,
+                  "    Defending: %s" % self.player.defending_kittens,
+                  "    Idle: %s" % (
+                    len(self.player.kennel) - self.player.attacking_kittens - self.player.defending_kittens),
+                  sep="\n")
             if self.player.special_kennel:
                 print("Here's something special for you to look at")
                 print("(Note: special cats can't be herded)")
@@ -355,7 +365,7 @@ class Game(object):
                                    self.player.experienceBar(),
                                    self.player.updateCourage(), 
                                    self.player.updateInsanity(),
-                                   self.player._weapon,
+                                   self.player.weapon,
                                    self.player.kittenCount(),
                                    items if items else "Nothing",))
     
@@ -363,12 +373,13 @@ class Game(object):
         
         item_chance = self.find_item_chance + self.player.insanityChanceBonus()/2
         kitten_chance = self.find_kitten_chance + self.player.insanityChanceBonus() - item_chance
+        save_kitten_chance = 1 - self.kitten_death_chance + self.player.getKittenCourageBonus()
         print(DETAILED_INFO_TEXT % (self.player.updateInsanity(),
                                     round(kitten_chance * 100, 2),
                                     round(item_chance * 100, 2),
                                     self.player.getBonusDamageFromInsanity(),
                                     self.player.updateCourage(),
-                                    (self.kitten_death_chance - self.player.getKittenCourageBonus()) * 100,
+                                    round(save_kitten_chance * 100, 2),
                                     ))
     
     def useItem(self):
@@ -406,11 +417,11 @@ class Game(object):
 
         sure = input("Are you sure you want to end it now?\n:")
         if sure and "y" in sure.lower():
-            self.running = False
             self.gameOver()
 
     def gameOver(self):
         
+        self.running = False
         if self.player:
             print(GAME_OVER)
             level = self.player.level * 10
@@ -423,7 +434,6 @@ class Game(object):
             print("You scored: " + str(score))
             print (self.version)
         
-        self.running = False
         file_manager.deleteSave()
         try:
             sys.exit()
@@ -432,9 +442,11 @@ class Game(object):
 
     def startNewGame(self):
         
-        print("Starting a new game...\n\n")
+        print("Starting a new game...")
+        print("Creating player...")
         self.player = player.Player()
-        self.player.equip(generateNextWeapon())
+        self.player.equip(generateNextWeapon(self.player.weapon))
+        file_manager.saveGame(self.player)
         #self.setDifficulty()
         self.player.intro()
         #self.player.difficulty = self.difficulty
@@ -443,8 +455,7 @@ class Game(object):
 
     def tryLoadExistingSave(self):
         
-        print(self.version)
-        print("Press Ctrl + C to quit.")
+        print("Attempting to load an existing save...")
         try:
             self.player = file_manager.loadGame()
             #self.difficulty = self.player.difficulty
@@ -453,14 +464,18 @@ class Game(object):
             else:
                 self.startNewGame()
         except FileNotFoundError:
+            logging.exception("DEBUG")
             self.startNewGame()
         except AttributeError:
+            logging.exception("DEBUG")
             print("Your game save is incompatible with this new version.",
                   "I realize this sucks, but life goes on... or does it?")
             self.startNewGame()
 
     def run(self):
 
+        print(self.version)
+        print("Press Ctrl + C to quit.")
         self.tryLoadExistingSave()
         
         while self.running:
@@ -492,7 +507,6 @@ if __name__ == "__main__":
         except:
             print(game.version)
             logging.exception("Something happened ...")
-            input("\nPress ENTER to quit")
     input("Press ENTER to quit")
 
         

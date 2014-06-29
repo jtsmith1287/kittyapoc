@@ -6,7 +6,7 @@ Module containing item info and methods
 import random
 
 
-WEAPON_LIST = [
+weapon_list = [
                ("Purse", (1, 1), None),
                ("Walking Stick", (1, 2), None),
                ("Brick", (2, 3), None),
@@ -20,7 +20,7 @@ WEAPON_LIST = [
                ("Rocket Launcher", (30, 30), None),
              ]
 
-FOOD_LIST = [
+food_list = [
              ("stale bread", None, (3,5)),
              ("stale bagels", None, (3,5)),
              ("rotten apple", None, (4, 5)),
@@ -39,16 +39,21 @@ FOOD_LIST = [
              ]
 
 
-def generateNextWeapon():
-    
-    if WEAPON_LIST:
-        name, dmg, hlg = WEAPON_LIST.pop(0)
-        item = Item(name, dmg, hlg)
-        return item
+def generateNextWeapon(current_weapon):
+
+    if weapon_list:
+        for i, entry in enumerate(weapon_list):
+            if current_weapon and entry[0] == current_weapon.name:
+                if len(weapon_list) > i + 1:
+                    name, dmg, hlg = weapon_list[i + 1]
+                else:
+                    name, dmg, hlg = weapon_list[0]
+                    item = Item(name, dmg, hlg)
+                    return item
 
 def getRandomFood():
     
-    name, dmg, hlg = random.choice(FOOD_LIST)
+    name, dmg, hlg = random.choice(food_list)
     item = Item(name, dmg, hlg)
     return item
 
