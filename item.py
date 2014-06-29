@@ -48,8 +48,8 @@ def generateNextWeapon(current_weapon):
                     name, dmg, hlg = weapon_list[i + 1]
                 else:
                     name, dmg, hlg = weapon_list[0]
-                    item = Item(name, dmg, hlg)
-                    return item
+                item = Item(name, dmg, hlg)
+                return item
 
 def getRandomFood():
     
