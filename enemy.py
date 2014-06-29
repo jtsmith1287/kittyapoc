@@ -76,7 +76,7 @@ class Boss(Zombie):
 
     def specialMove(self, player):
         
-        total_cats = max_chance = player.attacking_kittens + player.defending_kittens
+        total_cats = max_chance = int((player.attacking_kittens + player.defending_kittens)/1.5)
         if total_cats:
             max_chance = int(total_cats/self.rounds)
             if max_chance > total_cats:

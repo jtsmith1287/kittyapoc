@@ -103,7 +103,7 @@ class Game(object):
     def __init__(self):
         
         self.running = False
-        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 101
+        self.version = "\n\n\t\tCrazy Cat Lady Apocalypse v%s" % 103
         self.difficulty = 1.05
         self.dif_list = ["1: Easy", "2: Normal", "3: Your Grave\n"]
         self.find_kitten_chance = 0.22
@@ -152,7 +152,7 @@ class Game(object):
                         self.player.weapon, item))
                 self.player.equip(item)
             else:
-                print("You thought you saw something interesting... you must be going crazy.")
+                self.acquireItem(0)
     
     def findKitten(self):
         
@@ -239,10 +239,13 @@ class Game(object):
         in_combat = True
         cats_vulnerable = 0
         while in_combat:
-            time.sleep(1.5)
+            time.sleep(2)
             self.specialCatStuff(zombie, False)
-            time.sleep(1.5)
 
+            choice = input("\nENTER to attack, or 1 to use an item.\n:")
+            if choice:
+                if choice == "1":
+                    self.useItem()
             dmg_dealt, attacking_kittens = self.player.getDamage()
             dmg_recv, defending_kittens = zombie.getDamage(self.player)
             if defending_kittens > cats_vulnerable:
@@ -263,15 +266,15 @@ class Game(object):
             # Deal Damage
             self.player.updateHealth(-dmg_recv)
             zombie.updateHealth(-dmg_dealt)
-            time.sleep(.5)
             print(self.player.healthBar()) 
             print(zombie.healthBar())
 
-            time.sleep(1)
             self.specialCatStuff(zombie, True)
             in_combat = self.endCombatCheck(zombie)
+        time.sleep(1)
         self.deadKittenCheck(cats_vulnerable)
         self.player.startLevelUp(rewards=[self.findKitten, self.acquireItem])
+        time.sleep(1)
 
     def deadKittenCheck(self, cats_vulnerable):
         
@@ -285,16 +288,17 @@ class Game(object):
         if dead_kittens:
             time.sleep(1)
             print("    Oh no... oh I'm so sorry. There's been an accident.")
-            for cat in dead_kittens:
+            for cat, level in dead_kittens:
                 time.sleep(1)
-                print("    " + cat + " was killed.\n")
+                print("    " + cat + " was killed.", "[lvl %s]" % level, "\n")
+                
                 self.player.defending_kittens -= len(dead_kittens)
 
     def killAKitten(self):
         
         dead_cat = self.player.kennel.pop(
                 random.randint(0, len(self.player.kennel)-1))
-        return dead_cat.name
+        return dead_cat.name, dead_cat.level
     
     def venture(self):
         

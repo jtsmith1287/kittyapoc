@@ -42,14 +42,18 @@ food_list = [
 def generateNextWeapon(current_weapon):
 
     if weapon_list:
+        weapon = None
         for i, entry in enumerate(weapon_list):
             if current_weapon and entry[0] == current_weapon.name:
                 if len(weapon_list) > i + 1:
-                    name, dmg, hlg = weapon_list[i + 1]
+                    weapon = weapon_list[i + 1]; break
                 else:
-                    name, dmg, hlg = weapon_list[0]
-                item = Item(name, dmg, hlg)
-                return item
+                    weapon = weapon_list[-1]; break
+            else:
+                weapon = weapon_list[0]; break
+        name, dmg, hlg = weapon
+        item = Item(name, dmg, hlg)
+        return item
 
 def getRandomFood():
     
@@ -60,7 +64,7 @@ def getRandomFood():
 
 class Item(object):
     
-    def __init__(self, name, damage=None, healing=None):
+    def __init__(self, name=None, damage=None, healing=None):
         
         self.name = name
         self._damage = damage

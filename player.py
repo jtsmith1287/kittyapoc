@@ -41,7 +41,7 @@ class Player(object):
         self.inventory = []
         self.weapon = None
         self.level = 1
-        self.xp = [0, 2]
+        self.xp = [0, 1]
         self.boss_fights = [i*5 + 5 for i in range(10)]
         
     def __len__(self):
@@ -179,8 +179,8 @@ class Player(object):
             print(LEVEL_UP_TEXT % (random.choice(CRAZY_WORDS),
                                    random.choice(BRAVE_WORDS)))
             self.newStats()
-            self.xp = [0, self.level + 1]
             self.level += 1
+            self.xp = [0, self.level]
         self.checkKittenLevels()
     
     def checkKittenLevels(self):
